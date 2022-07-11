@@ -266,12 +266,12 @@ classdef Orbit3d < handle
         function toggleHelp(~, hFig)
             hHelp = findobj(hFig, "Tag", "help");
             if isempty(hHelp)
-                uilabel("Parent",hFig,"Text","right click: rotate obj",                     "Position", [10 10 200 20], "Tag","help")
-                uilabel("Parent",hFig,"Text","double right click: set new rotation center", "Position", [10 30 300 20], "Tag","help")
-                uilabel("Parent",hFig,"Text","r: reset view",                               "Position", [10 50 200 20], "Tag","help")
-                uilabel("Parent",hFig,"Text","w: wireframe",                                "Position", [10 70 200 20], "Tag","help")
-                uilabel("Parent",hFig,"Text","c: next color",                               "Position", [10 90 200 20], "Tag","help")
-                uilabel("Parent",hFig,"Text","t: transparency",                             "Position", [10 110 200 20], "Tag","help")
+                uilabel("Parent",hFig,"Text","right click: rotate obj",                     "Position", [10 10 200 20], "Tag","help");
+                uilabel("Parent",hFig,"Text","double right click: set new rotation center", "Position", [10 30 300 20], "Tag","help");
+                uilabel("Parent",hFig,"Text","r: reset view",                               "Position", [10 50 200 20], "Tag","help");
+                uilabel("Parent",hFig,"Text","w: wireframe",                                "Position", [10 70 200 20], "Tag","help");
+                uilabel("Parent",hFig,"Text","c: next color",                               "Position", [10 90 200 20], "Tag","help");
+                uilabel("Parent",hFig,"Text","t: transparency",                             "Position", [10 110 200 20], "Tag","help");
             else
                 delete(hHelp)
             end
