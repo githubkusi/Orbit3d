@@ -54,8 +54,12 @@ classdef Orbit3d < handle
             hAxes.CameraUpVector = xf(1:3,1)';
         end
 
-        function buttonDownCallback(self, hFig, windowMouseData)
+        function buttonDownCallback(self, hFig, ~)
             hAxes = self.findAxesOfCurrentObject(hFig); %#ok<*PROPLC>
+            if isempty(hAxes)
+                return
+            end
+
             switch hFig.SelectionType
                 case 'normal'
                     self.getOrNewLight(hAxes);
@@ -65,14 +69,14 @@ classdef Orbit3d < handle
                     self.currentPoint = hFig.CurrentPoint;
 
                 case 'alt'
-                    pickedPoint = geometry.picker(hFig.CurrentObject);
+                    pickedPoint = gfx.internal.geometry.picker(hFig.CurrentObject);
                     if ~isempty(pickedPoint)
                         hAxes.CameraTarget = pickedPoint';
                     end
             end
         end
 
-        function buttonMotionCallback(self, hFig, windowMouseData)
+        function buttonMotionCallback(self, hFig, ~)
             hAxes = self.findAxesOfCurrentObject(hFig);
 
             cpDelta = hFig.CurrentPoint - self.currentPoint;
@@ -82,8 +86,8 @@ classdef Orbit3d < handle
             w = cpDelta * speed;
             xfCam = self.getCameraTransform(hAxes);
 
-            qx = gfx.internal.Quaternion.angleaxis(w(2), [0;1;0]);
-            qy = gfx.internal.Quaternion.angleaxis(-w(1), [1;0;0]);
+            qx = gfx.internal.math.Quaternion.angleaxis(w(2), [0;1;0]);
+            qy = gfx.internal.math.Quaternion.angleaxis(-w(1), [1;0;0]);
             q = qx*qy;
 
             xfQ = eye(4);
@@ -101,7 +105,7 @@ classdef Orbit3d < handle
             hLight.Position = xfNewCam(1:3, 4)';
         end
 
-        function buttonUpCallback(self, hFig, windowMouseData)
+        function buttonUpCallback(~, hFig, ~)
             hFig.WindowButtonMotionFcn = [];
         end
 
@@ -163,6 +167,9 @@ classdef Orbit3d < handle
 
                 case 'c'
                     self.toggleColor(hFig.CurrentObject)
+
+                case 'h'
+                    self.toggleHelp(hFig)
             end
         end
 
@@ -199,8 +206,12 @@ classdef Orbit3d < handle
                 [r, g, b] = meshgrid(0:1,0:1,0:1);
                 rgb = [r(:) g(:) b(:)];
                 [~, idx] = min(sum(abs(rgb - hObj.FaceColor), 2));
-                hObj.FaceColor = rgb(gfx.internal.mod1(idx + 1, 8), :);
+                hObj.FaceColor = rgb(gfx.internal.math.mod1(idx + 1, 8), :);
             end
+        end
+
+        function toggleHelp(~, hFig)
+            
         end
     end
 end

@@ -176,9 +176,9 @@ classdef Quaternion
                     siz = size( varargin{1} );
                     nel = prod( siz );
                     if nel == 0
-                        q	= math.Quaternion.empty;
+                        q	= gfx.internal.math.Quaternion.empty;
                         return;
-                    elseif isa( varargin{1}, 'math.Quaternion' )
+                    elseif isa( varargin{1}, 'gfx.internal.math.Quaternion' )
                         q   = varargin{1};
                         return;
                     elseif (nel == 1) || ~isreal( varargin{1}(:) )
@@ -267,7 +267,7 @@ classdef Quaternion
             end % switch nargin
             
             if nel == 0
-                q   = math.Quaternion.empty;
+                q   = gfx.internal.math.Quaternion.empty;
             end
             q   = reshape( q, siz );
             if ~isempty( perm )
@@ -295,11 +295,11 @@ classdef Quaternion
             % Output:
             %  q3(n3)   Quaternion array of function or operator outputs
             %           size(q3) = max( size(q1), size(q2) )
-            if ~isa( q1, 'math.Quaternion' )
-                q1  = math.Quaternion( real(q1), imag(q1), 0, 0 );
+            if ~isa( q1, 'gfx.internal.math.Quaternion' )
+                q1  = gfx.internal.math.Quaternion( real(q1), imag(q1), 0, 0 );
             end
-            if ~isa( q2, 'math.Quaternion' )
-                q2  = math.Quaternion( real(q2), imag(q2), 0, 0 );
+            if ~isa( q2, 'gfx.internal.math.Quaternion' )
+                q2  = gfx.internal.math.Quaternion( real(q2), imag(q2), 0, 0 );
             end
             s1  = size( q1 );
             s2  = size( q2 );
@@ -315,7 +315,7 @@ classdef Quaternion
             s3  = max( s1, s2 );
             nd3 = length( s3 );
             n3  = prod( s3 );
-            q3  = math.Quaternion.nan( s3 );
+            q3  = gfx.internal.math.Quaternion.nan( s3 );
             for i3 = 1 : n3
                 [ix3{1:nd3}] = ind2sub( s3, i3 );
                 ix1     = cellfun( @min, ix3, c1, 'UniformOutput', false );
@@ -330,7 +330,7 @@ classdef Quaternion
         
         function qc = conj( q )
             d   = double( q );
-            qc  = reshape( math.Quaternion( d(1,:), -d(2,:), -d(3,:), -d(4,:) ), ...
+            qc  = reshape( gfx.internal.math.Quaternion( d(1,:), -d(2,:), -d(3,:), -d(4,:) ), ...
                 size( q ));
         end % conj
         
@@ -410,10 +410,10 @@ classdef Quaternion
             end
             siz = size( q );
             if siz(1) <= 1
-                qd  = math.Quaternion.empty;
+                qd  = gfx.internal.math.Quaternion.empty;
                 return;
             end
-            qd  = math.Quaternion.zeros( [(siz(1)-1), siz(2:end)] );
+            qd  = gfx.internal.math.Quaternion.zeros( [(siz(1)-1), siz(2:end)] );
             for is = 1 : siz(1)-1
                 qd(is,:) = q(is+1,:) - q(is,:);
             end
@@ -471,11 +471,11 @@ classdef Quaternion
         end % double
         
         function l = eq( q1, q2 )
-            if ~isa( q1, 'math.Quaternion' )
-                q1  = math.Quaternion( real(q1), imag(q1), 0, 0 );
+            if ~isa( q1, 'gfx.internal.math.Quaternion' )
+                q1  = gfx.internal.math.Quaternion( real(q1), imag(q1), 0, 0 );
             end
-            if ~isa( q2, 'math.Quaternion' )
-                q2  = math.Quaternion( real(q2), imag(q2), 0, 0 );
+            if ~isa( q2, 'gfx.internal.math.Quaternion' )
+                q2  = gfx.internal.math.Quaternion( real(q2), imag(q2), 0, 0 );
             end
             si1 = size( q1 );
             si2 = size( q2 );
@@ -503,11 +503,11 @@ classdef Quaternion
             % l = (q1 == q2) | (q1 == -q2)
             % optional argument tol (default = eps) sets tolerance for difference
             % from exact equality
-            if ~isa( q1, 'math.Quaternion' )
-                q1  = math.Quaternion( real(q1), imag(q1), 0, 0 );
+            if ~isa( q1, 'gfx.internal.math.Quaternion' )
+                q1  = gfx.internal.math.Quaternion( real(q1), imag(q1), 0, 0 );
             end
-            if ~isa( q2, 'math.Quaternion' )
-                q2  = math.Quaternion( real(q2), imag(q2), 0, 0 );
+            if ~isa( q2, 'gfx.internal.math.Quaternion' )
+                q2  = gfx.internal.math.Quaternion( real(q2), imag(q2), 0, 0 );
             end
             if (nargin < 3) || isempty( tol )
                 tol = eps;
@@ -549,7 +549,7 @@ classdef Quaternion
             sv      = repmat( sv, [3, od] );
             ex      = repmat( reshape( exp( d(1,:) ), [1 siz(2:end)] ), [4, od] );
             de      = ex .* [ cv; sv .* reshape( d(2:4,:), [3 siz(2:end)] )];
-            qe      = reshape( math.Quaternion( de(1,:), de(2,:), de(3,:), de(4,:) ), ...
+            qe      = reshape( gfx.internal.math.Quaternion( de(1,:), de(2,:), de(3,:), de(4,:) ), ...
                 size( q ));
         end % exp
         
@@ -577,7 +577,7 @@ classdef Quaternion
             %  qi(ni,nq)  interpolated Quaternion array
             nna = nnz( ~cellfun( @ischar, varargin ));
             im  = 4;
-            if isa( varargin{1}, 'math.Quaternion' )
+            if isa( varargin{1}, 'gfx.internal.math.Quaternion' )
                 q   = varargin{1};
                 siq = size( q );
                 if nna == 2
@@ -599,7 +599,7 @@ classdef Quaternion
                     t   = varargin{2}(:);
                     ti  = varargin{3}(:);
                 end
-            elseif isa( varargin{2}, 'math.Quaternion' )
+            elseif isa( varargin{2}, 'gfx.internal.math.Quaternion' )
                 t   = varargin{1}(:);
                 q   = varargin{2};
                 ti  = varargin{3}(:);
@@ -609,7 +609,7 @@ classdef Quaternion
             end
             neq = prod( siq );
             if neq == 0
-                qi  = math.Quaternion.empty;
+                qi  = gfx.internal.math.Quaternion.empty;
                 return;
             end
             nt  = numel( t );
@@ -664,7 +664,7 @@ classdef Quaternion
             ne0 = n2 ~= 0;
             di  = Inf( size( d ));
             di(ne0)  = d(ne0) ./ n2(ne0);
-            qi  = reshape( math.Quaternion( di(1,:), di(2,:), di(3,:), di(4,:) ), ...
+            qi  = reshape( gfx.internal.math.Quaternion( di(1,:), di(2,:), di(3,:), di(4,:) ), ...
                 size( q ));
         end % inverse
         
@@ -675,8 +675,8 @@ classdef Quaternion
                 error( 'Not enough input arguments' );
             end
             l   = false;
-            if ~isa( q1, 'math.Quaternion' )
-                q1  = math.Quaternion( real(q1), imag(q1), 0, 0 );
+            if ~isa( q1, 'gfx.internal.math.Quaternion' )
+                q1  = gfx.internal.math.Quaternion( real(q1), imag(q1), 0, 0 );
             end
             si1 = size( q1 );
             for iar = 1 : nar
@@ -685,8 +685,8 @@ classdef Quaternion
                         ~all( si1 == si2 )
                     return;
                 else
-                    if ~isa( varargin{iar}, 'math.Quaternion' )
-                        q2  = math.Quaternion( ...
+                    if ~isa( varargin{iar}, 'gfx.internal.math.Quaternion' )
+                        q2  = gfx.internal.math.Quaternion( ...
                             real(varargin{iar}), imag(varargin{iar}), 0, 0 );
                     else
                         q2  = varargin{iar};
@@ -706,8 +706,8 @@ classdef Quaternion
                 error( 'Not enough input arguments' );
             end
             l   = false;
-            if ~isa( q1, 'math.Quaternion' )
-                q1  = math.Quaternion( real(q1), imag(q1), 0, 0 );
+            if ~isa( q1, 'gfx.internal.math.Quaternion' )
+                q1  = gfx.internal.math.Quaternion( real(q1), imag(q1), 0, 0 );
             end
             si1 = size( q1 );
             for iar = 1 : nar
@@ -716,8 +716,8 @@ classdef Quaternion
                         ~all( si1 == si2 )
                     return;
                 else
-                    if ~isa( varargin{iar}, 'math.Quaternion' )
-                        q2  = math.Quaternion( ...
+                    if ~isa( varargin{iar}, 'gfx.internal.math.Quaternion' )
+                        q2  = gfx.internal.math.Quaternion( ...
                             real(varargin{iar}), imag(varargin{iar}), 0, 0 );
                     else
                         q2  = varargin{iar};
@@ -737,8 +737,8 @@ classdef Quaternion
                 error( 'Not enough input arguments' );
             end
             l   = false;
-            if ~isa( q1, 'math.Quaternion' )
-                q1  = math.Quaternion( real(q1), imag(q1), 0, 0 );
+            if ~isa( q1, 'gfx.internal.math.Quaternion' )
+                q1  = gfx.internal.math.Quaternion( real(q1), imag(q1), 0, 0 );
             end
             si1 = size( q1 );
             for iar = 1 : nar
@@ -747,8 +747,8 @@ classdef Quaternion
                         ~all( si1 == si2 )
                     return;
                 else
-                    if ~isa( varargin{iar}, 'math.Quaternion' )
-                        q2  = math.Quaternion( ...
+                    if ~isa( varargin{iar}, 'gfx.internal.math.Quaternion' )
+                        q2  = gfx.internal.math.Quaternion( ...
                             real(varargin{iar}), imag(varargin{iar}), 0, 0 );
                     else
                         q2  = varargin{iar};
@@ -792,18 +792,18 @@ classdef Quaternion
         end % kmag
         
         function q3 = ldivide( q1, q2 )
-            if ~isa( q1, 'math.Quaternion' )
-                q1  = math.Quaternion( real(q1), imag(q1), 0, 0 );
+            if ~isa( q1, 'gfx.internal.math.Quaternion' )
+                q1  = gfx.internal.math.Quaternion( real(q1), imag(q1), 0, 0 );
             end
-            if ~isa( q2, 'math.Quaternion' )
-                q2  = math.Quaternion( real(q2), imag(q2), 0, 0 );
+            if ~isa( q2, 'gfx.internal.math.Quaternion' )
+                q2  = gfx.internal.math.Quaternion( real(q2), imag(q2), 0, 0 );
             end
             si1 = size( q1 );
             si2 = size( q2 );
             ne1 = prod( si1 );
             ne2 = prod( si2 );
             if (ne1 == 0) || (ne2 == 0)
-                q3  = math.Quaternion.empty;
+                q3  = gfx.internal.math.Quaternion.empty;
                 return;
             elseif ~isequal( si1, si2 ) && (ne1 ~= 1) && (ne2 ~= 1)
                 error( 'Matrix dimensions must agree' );
@@ -842,23 +842,23 @@ classdef Quaternion
             nn      = (d1 < 0) & (vn == 0);
             va(1,nn)= pi;
             dl      = [ lq; va ];
-            ql      = reshape( math.Quaternion( dl(1,:), dl(2,:), dl(3,:), dl(4,:) ), ...
+            ql      = reshape( gfx.internal.math.Quaternion( dl(1,:), dl(2,:), dl(3,:), dl(4,:) ), ...
                 size( q ));
         end % log
         
         function q3 = minus( q1, q2 )
-            if ~isa( q1, 'math.Quaternion' )
-                q1  = math.Quaternion( real(q1), imag(q1), 0, 0 );
+            if ~isa( q1, 'gfx.internal.math.Quaternion' )
+                q1  = gfx.internal.math.Quaternion( real(q1), imag(q1), 0, 0 );
             end
-            if ~isa( q2, 'math.Quaternion' )
-                q2  = math.Quaternion( real(q2), imag(q2), 0, 0 );
+            if ~isa( q2, 'gfx.internal.math.Quaternion' )
+                q2  = gfx.internal.math.Quaternion( real(q2), imag(q2), 0, 0 );
             end
             si1 = size( q1 );
             si2 = size( q2 );
             ne1 = prod( si1 );
             ne2 = prod( si2 );
             if (ne1 == 0) || (ne2 == 0)
-                q3  = math.Quaternion.empty;
+                q3  = gfx.internal.math.Quaternion.empty;
                 return;
             elseif ne1 == 1
                 siz = si2;
@@ -870,7 +870,7 @@ classdef Quaternion
                 error( 'Matrix dimensions must agree' );
             end
             d3  = bsxfun( @minus, [q1.e], [q2.e] );
-            q3  = math.Quaternion( d3(1,:), d3(2,:), d3(3,:), d3(4,:) );
+            q3  = gfx.internal.math.Quaternion( d3(1,:), d3(2,:), d3(3,:), d3(4,:) );
             q3  = reshape( q3, siz );
         end % minus
         
@@ -890,17 +890,17 @@ classdef Quaternion
             if neq == 1
                 qp  = power( q, p );
                 return;
-            elseif isa( p, 'math.Quaternion' )
+            elseif isa( p, 'gfx.internal.math.Quaternion' )
                 error( 'Quaternion as matrix exponent is not defined' );
             end
             if (neq == 0) || (nep == 0)
-                qp  = math.Quaternion.empty;
+                qp  = gfx.internal.math.Quaternion.empty;
                 return;
             elseif (nep > 1) || (mod( p, 1 ) ~= 0) || (p < 0) || ...
                     (numel( siq ) > 2) || (siq(1) ~= siq(2))
                 error( 'Inputs must be a scalar non-negative integer power and a square Quaternion matrix' );
             elseif p == 0
-                qp  = math.Quaternion.eye( siq(1) );
+                qp  = gfx.internal.math.Quaternion.eye( siq(1) );
                 return;
             end
             qp  = q;
@@ -921,11 +921,11 @@ classdef Quaternion
             % function q3 = mtimes( q1, q2 )
             % q3 = matrix Quaternion product of 2-D conformable Quaternion matrices q1
             % and q2
-            if ~isa( q1, 'math.Quaternion' )
-                q1  = math.Quaternion( real(q1), imag(q1), 0, 0 );
+            if ~isa( q1, 'gfx.internal.math.Quaternion' )
+                q1  = gfx.internal.math.Quaternion( real(q1), imag(q1), 0, 0 );
             end
-            if ~isa( q2, 'math.Quaternion' )
-                q2  = math.Quaternion( real(q2), imag(q2), 0, 0 );
+            if ~isa( q2, 'gfx.internal.math.Quaternion' )
+                q2  = gfx.internal.math.Quaternion( real(q2), imag(q2), 0, 0 );
             end
             si1 = size( q1 );
             si2 = size( q2 );
@@ -941,7 +941,7 @@ classdef Quaternion
             if si1(2) ~= si2(1)
                 error( 'Inner matrix dimensions must agree' );
             end
-            q3  = repmat( math.Quaternion, [si1(1) si2(2)] );
+            q3  = repmat( gfx.internal.math.Quaternion, [si1(1) si2(2)] );
             for i1 = 1 : si1(1)
                 for i2 = 1 : si2(2)
                     for i3 = 1 : si1(2)
@@ -983,25 +983,25 @@ classdef Quaternion
             n4  = repmat( n, 4, nel );
             ne0 = (n4 ~= 0) & (n4 ~= 1);
             d(ne0)  = d(ne0) ./ n4(ne0);
-            q   = reshape( math.Quaternion( d(1,:), d(2,:), d(3,:), d(4,:) ), siz );
+            q   = reshape( gfx.internal.math.Quaternion( d(1,:), d(2,:), d(3,:), d(4,:) ), siz );
             if nargout > 1
                 n   = shiftdim( n, 1 );
             end
         end % normalize
         
         function q3 = plus( q1, q2 )
-            if ~isa( q1, 'math.Quaternion' )
-                q1  = math.Quaternion( real(q1), imag(q1), 0, 0 );
+            if ~isa( q1, 'gfx.internal.math.Quaternion' )
+                q1  = gfx.internal.math.Quaternion( real(q1), imag(q1), 0, 0 );
             end
-            if ~isa( q2, 'math.Quaternion' )
-                q2  = math.Quaternion( real(q2), imag(q2), 0, 0 );
+            if ~isa( q2, 'gfx.internal.math.Quaternion' )
+                q2  = gfx.internal.math.Quaternion( real(q2), imag(q2), 0, 0 );
             end
             si1 = size( q1 );
             si2 = size( q2 );
             ne1 = prod( si1 );
             ne2 = prod( si2 );
             if (ne1 == 0) || (ne2 == 0)
-                q3  = math.Quaternion.empty;
+                q3  = gfx.internal.math.Quaternion.empty;
                 return;
             elseif ne1 == 1
                 siz = si2;
@@ -1013,7 +1013,7 @@ classdef Quaternion
                 error( 'Matrix dimensions must agree' );
             end
             d3  = bsxfun( @plus, [q1.e], [q2.e] );
-            q3  = math.Quaternion( d3(1,:), d3(2,:), d3(3,:), d3(4,:) );
+            q3  = gfx.internal.math.Quaternion( d3(1,:), d3(2,:), d3(3,:), d3(4,:) );
             q3  = reshape( q3, siz );
         end % plus
         
@@ -1024,7 +1024,7 @@ classdef Quaternion
             neq = prod( siq );
             nep = prod( sip );
             if (neq == 0) || (nep == 0)
-                qp  = math.Quaternion.empty;
+                qp  = gfx.internal.math.Quaternion.empty;
                 return;
             elseif ~isequal( siq, sip ) && (neq ~= 1) && (nep ~= 1)
                 error( 'Matrix dimensions must agree' );
@@ -1060,11 +1060,11 @@ classdef Quaternion
         function q3 = product( q1, q2 )
             % function q3 = product( q1, q2 )
             % q3 = Quaternion product of scalar Quaternions q1 and q2
-            if ~isa( q1, 'math.Quaternion' )
-                q1  = math.Quaternion( real(q1), imag(q1), 0, 0 );
+            if ~isa( q1, 'gfx.internal.math.Quaternion' )
+                q1  = gfx.internal.math.Quaternion( real(q1), imag(q1), 0, 0 );
             end
-            if ~isa( q2, 'math.Quaternion' )
-                q2  = math.Quaternion( real(q2), imag(q2), 0, 0 );
+            if ~isa( q2, 'gfx.internal.math.Quaternion' )
+                q2  = gfx.internal.math.Quaternion( real(q2), imag(q2), 0, 0 );
             end
             if (numel( q1 ) ~= 1) || (numel( q2 ) ~= 1)
                 error( 'product not defined for arrays, use mtimes or times' );
@@ -1075,22 +1075,22 @@ classdef Quaternion
                 ee(1,3) - ee(2,4) + ee(3,1) + ee(4,2); ...
                 ee(1,4) + ee(2,3) - ee(3,2) + ee(4,1)];
             eo  = chop( eo );
-            q3  = math.Quaternion( eo(1), eo(2), eo(3), eo(4) );
+            q3  = gfx.internal.math.Quaternion( eo(1), eo(2), eo(3), eo(4) );
         end % product
         
         function q3 = rdivide( q1, q2 )
-            if ~isa( q1, 'math.Quaternion' )
-                q1  = math.Quaternion( real(q1), imag(q1), 0, 0 );
+            if ~isa( q1, 'gfx.internal.math.Quaternion' )
+                q1  = gfx.internal.math.Quaternion( real(q1), imag(q1), 0, 0 );
             end
-            if ~isa( q2, 'math.Quaternion' )
-                q2  = math.Quaternion( real(q2), imag(q2), 0, 0 );
+            if ~isa( q2, 'gfx.internal.math.Quaternion' )
+                q2  = gfx.internal.math.Quaternion( real(q2), imag(q2), 0, 0 );
             end
             si1 = size( q1 );
             si2 = size( q2 );
             ne1 = prod( si1 );
             ne2 = prod( si2 );
             if (ne1 == 0) || (ne2 == 0)
-                q3  = math.Quaternion.empty;
+                q3  = gfx.internal.math.Quaternion.empty;
                 return;
             elseif ~isequal( si1, si2 ) && (ne1 ~= 1) && (ne2 ~= 1)
                 error( 'Matrix dimensions must agree' );
@@ -1152,18 +1152,18 @@ classdef Quaternion
         end % sum
         
         function q3 = times( q1, q2 )
-            if ~isa( q1, 'math.Quaternion' )
-                q1  = math.Quaternion( real(q1), imag(q1), 0, 0 );
+            if ~isa( q1, 'gfx.internal.math.Quaternion' )
+                q1  = gfx.internal.math.Quaternion( real(q1), imag(q1), 0, 0 );
             end
-            if ~isa( q2, 'math.Quaternion' )
-                q2  = math.Quaternion( real(q2), imag(q2), 0, 0 );
+            if ~isa( q2, 'gfx.internal.math.Quaternion' )
+                q2  = gfx.internal.math.Quaternion( real(q2), imag(q2), 0, 0 );
             end
             si1 = size( q1 );
             si2 = size( q2 );
             ne1 = prod( si1 );
             ne2 = prod( si2 );
             if (ne1 == 0) || (ne2 == 0)
-                q3  = math.Quaternion.empty;
+                q3  = gfx.internal.math.Quaternion.empty;
                 return;
             elseif ~isequal( si1, si2 ) && (ne1 ~= 1) && (ne2 ~= 1)
                 error( 'Matrix dimensions must agree' );
@@ -1180,7 +1180,7 @@ classdef Quaternion
         
         function qm = uminus( q )
             d   = -double( q );
-            qm  = reshape( math.Quaternion( d(1,:), d(2,:), d(3,:), d(4,:) ), ...
+            qm  = reshape( gfx.internal.math.Quaternion( d(1,:), d(2,:), d(3,:), d(4,:) ), ...
                 size( q ));
         end % uminus
         
@@ -1247,10 +1247,10 @@ classdef Quaternion
             %  w        3xN or Nx3 element angle rate vectors in radians/s
             % Output:
             %  qd       Quaternion derivatives, qd = 0.5 * q * Quaternion(w)
-            if isa( varargin{1}, 'math.Quaternion' )
-                qd  = 0.5 .* varargin{1} .* math.Quaternion( varargin{2} );
+            if isa( varargin{1}, 'gfx.internal.math.Quaternion' )
+                qd  = 0.5 .* varargin{1} .* gfx.internal.math.Quaternion( varargin{2} );
             else
-                qd  = 0.5 .* varargin{2} .* math.Quaternion( varargin{1} );
+                qd  = 0.5 .* varargin{2} .* gfx.internal.math.Quaternion( varargin{1} );
             end
         end % Derivative
         
@@ -1489,7 +1489,7 @@ classdef Quaternion
             dt(1,:)       = difft(1,:);
             dt(2:end-1,:) = 0.5 *( difft(1:end-1,:) + difft(2:end,:) );
             dt(end,:)     = difft(end,:);
-            dq            = math.Quaternion.zeros( siq );
+            dq            = gfx.internal.math.Quaternion.zeros( siq );
             q1iq2         = q(1:end-1,:) .* inverse( q(2:end,:) );
             neg           = real( q1iq2 ) < 0;
             q1iq2(neg)    = -q1iq2(neg);    % keep real element >= 0
@@ -1578,7 +1578,7 @@ classdef Quaternion
                 (I(1) - I(2)) / I(3) ];
             [T, Y]  = ode45( @Euler, t, y0, options );
             function yd = Euler( ti, yi )
-                qi  = math.Quaternion( yi(1), yi(2), yi(3), yi(4) );
+                qi  = gfx.internal.math.Quaternion( yi(1), yi(2), yi(3), yi(4) );
                 wi  = yi(5:7);
                 qd  = double( qi.Derivative( wi ));
                 wd  = [ wi(2) * wi(3) * I0(1);
@@ -1597,11 +1597,11 @@ classdef Quaternion
             else
                 nT  = length(T);
             end
-            q1      = repmat( math.Quaternion, [1 nT] );
+            q1      = repmat( gfx.internal.math.Quaternion, [1 nT] );
             w1      = zeros( [3 nT] );
             t1      = T(:).';
             for it = 1 : nT
-                q1(it)   = math.Quaternion( Y(it,1), Y(it,2), Y(it,3), Y(it,4) );
+                q1(it)   = gfx.internal.math.Quaternion( Y(it,1), Y(it,2), Y(it,3), Y(it,4) );
                 w1(:,it) = Y(it,5:7).';
             end
             q1      = q1.normalize;
@@ -1623,7 +1623,7 @@ classdef Quaternion
             if nargin < 2
                 error( 'RotateVector method requires 2 inputs: a vector and a Quaternion' );
             end
-            if isa( varargin{1}, 'math.Quaternion' )
+            if isa( varargin{1}, 'gfx.internal.math.Quaternion' )
                 q   = varargin{1};
                 v   = varargin{2};
             else
@@ -1694,7 +1694,7 @@ classdef Quaternion
             if nargin < 2
                 error( 'RotateVectorQ method requires 2 inputs: a vector and a Quaternion' );
             end
-            if isa( varargin{1}, 'math.Quaternion' )
+            if isa( varargin{1}, 'gfx.internal.math.Quaternion' )
                 q   = varargin{1};
                 v   = varargin{2};
             else
@@ -1719,7 +1719,7 @@ classdef Quaternion
                 end
             end
             sip = size( v );
-            qv  = math.Quaternion( v(1,:), v(2,:), v(3,:) );
+            qv  = gfx.internal.math.Quaternion( v(1,:), v(2,:), v(3,:) );
             qv  = reshape( qv, [1 sip(2:end)] );
             if dim > 1
                 qv  = ipermute( qv, perm );
@@ -1808,7 +1808,7 @@ classdef Quaternion
             for iel = nel : -1 : 1
                 d(:,iel) = AngAxis2e( angle(min(iel,neg)), axis(:,min(iel,nex)) );
             end
-            q   = math.Quaternion( d(1,:), d(2,:), d(3,:), d(4,:) );
+            q   = gfx.internal.math.Quaternion( d(1,:), d(2,:), d(3,:), d(4,:) );
             q   = reshape( q, siz );
             if neg == 1
                 q   = ipermute( q, perm );
@@ -1901,9 +1901,9 @@ classdef Quaternion
                 N   = 1;
             end
             if isempty(N) || (N <= 0)
-                q   = math.Quaternion.empty;
+                q   = gfx.internal.math.Quaternion.empty;
             else
-                q   = math.Quaternion( eye(N), 0, 0, 0 );
+                q   = gfx.internal.math.Quaternion( eye(N), 0, 0, 0 );
             end
         end % Quaternion.eye
         
@@ -1921,15 +1921,15 @@ classdef Quaternion
                 siz = [varargin{1} varargin{1}];
             end
             if prod( siz ) == 0
-                q   = reshape( math.Quaternion.empty, siz );
+                q   = reshape( gfx.internal.math.Quaternion.empty, siz );
             else
-                q   = math.Quaternion( nan(siz), nan, nan, nan );
+                q   = gfx.internal.math.Quaternion( nan(siz), nan, nan, nan );
             end
         end % Quaternion.nan
         
         function q = NaN( varargin )
             % function q = Quaternion.NaN( siz )
-            q   = math.Quaternion.nan( varargin{:} );
+            q   = gfx.internal.math.Quaternion.nan( varargin{:} );
         end % Quaternion.NaN
         
         function q = ones( varargin )
@@ -1946,9 +1946,9 @@ classdef Quaternion
                 siz = [varargin{1} varargin{1}];
             end
             if prod( siz ) == 0
-                q   = reshape( math.Quaternion.empty, siz );
+                q   = reshape( gfx.internal.math.Quaternion.empty, siz );
             else
-                q   = math.Quaternion( ones(siz), 0, 0, 0 );
+                q   = gfx.internal.math.Quaternion( ones(siz), 0, 0, 0 );
             end
         end % Quaternion.ones
         
@@ -1971,11 +1971,11 @@ classdef Quaternion
                 siz = [varargin{1} varargin{1}];
             end
             if prod( siz ) == 0
-                q   = math.Quaternion.empty;
+                q   = gfx.internal.math.Quaternion.empty;
                 return;
             end
             d   = [ rand( [1, siz] ); 2 * rand( [3, siz] ) - 1 ];
-            q   = math.Quaternion( d(1,:), d(2,:), d(3,:), d(4,:) );
+            q   = gfx.internal.math.Quaternion( d(1,:), d(2,:), d(3,:), d(4,:) );
             q   = reshape( q, siz );
         end % Quaternion.rand
         
@@ -1999,7 +1999,7 @@ classdef Quaternion
                 siz = [varargin{1} varargin{1}];
             end
             if prod( siz ) == 0
-                q   = math.Quaternion.empty;
+                q   = gfx.internal.math.Quaternion.empty;
                 return;
             end
             d   = randn( [4, prod( siz )] );
@@ -2007,7 +2007,7 @@ classdef Quaternion
             dn  = bsxfun( @rdivide, d, n );
             neg = dn(1,:) < 0;
             dn(:,neg) = -dn(:,neg);
-            q   = math.Quaternion( dn(1,:), dn(2,:), dn(3,:), dn(4,:) );
+            q   = gfx.internal.math.Quaternion( dn(1,:), dn(2,:), dn(3,:), dn(4,:) );
             q   = reshape( q, siz );
         end % Quaternion.randRot
         
@@ -2095,7 +2095,7 @@ classdef Quaternion
             for iel = nel : -1 : 1
                 d(:,iel) = RotMat2e( chop( R(:,:,iel) ));
             end
-            q   = math.Quaternion( d(1,:), d(2,:), d(3,:), d(4,:) );
+            q   = gfx.internal.math.Quaternion( d(1,:), d(2,:), d(3,:), d(4,:) );
             q   = normalize( q );
             q   = reshape( q, siz(3:end) );
         end % Quaternion.rotationmatrix
@@ -2114,9 +2114,9 @@ classdef Quaternion
                 siz = [varargin{1} varargin{1}];
             end
             if prod( siz ) == 0
-                q   = reshape( math.Quaternion.empty, siz );
+                q   = reshape( gfx.internal.math.Quaternion.empty, siz );
             else
-                q   = math.Quaternion( zeros(siz), 0, 0, 0 );
+                q   = gfx.internal.math.Quaternion( zeros(siz), 0, 0, 0 );
             end
         end % Quaternion.zeros
         
@@ -2164,7 +2164,7 @@ for i0 = 1 : na
             error( 'Illegal axis designation' );
     end
 end
-q0   = math.Quaternion.angleaxis( angles(:).', axis );
+q0   = gfx.internal.math.Quaternion.angleaxis( angles(:).', axis );
 qout = q0(1);
 for i0 = 2 : numel(q0)
     qout = product( q0(i0), qout );
@@ -2204,13 +2204,13 @@ dotuv   = dot( u, v );
 if magw == 0
     % Either norm(u) == 0 or norm(v) == 0 or dotuv/(norm(u)*norm(v)) == 1
     if dotuv >= 0
-        qout    = math.Quaternion( 1, 0, 0, 0 );
+        qout    = gfx.internal.math.Quaternion( 1, 0, 0, 0 );
         return;
     end
     % dotuv/(norm(u)*norm(v)) == -1
     % If v == [v(1); 0; 0], rotate by pi about the [0; 0; 1] axis
     if (v(2) == 0) && (v(3) == 0)
-        qout    = math.Quaternion( 0, 0, 0, 1 );
+        qout    = gfx.internal.math.Quaternion( 0, 0, 0, 1 );
         return;
     end
     % Otherwise constuct "what" such that dot(v,what) == 0, and rotate about it
@@ -2225,7 +2225,7 @@ end
 c       = sqrt( 0.5 *( 1 + costh ));    % real element >= 0
 s       = sqrt( 0.5 *( 1 - costh ));
 eout    = [ c; s * what ];
-qout    = math.Quaternion( eout(1), eout(2), eout(3), eout(4) );
+qout    = gfx.internal.math.Quaternion( eout(1), eout(2), eout(3), eout(4) );
 end % UV2q
 
 % Helper functions
