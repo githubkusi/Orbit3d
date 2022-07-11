@@ -1,10 +1,11 @@
 hGrid = uigridlayout([1 2]);
+hGrid.Parent.Name = "Orbit3d for multiple axes (Press h for help)";
 
 hAxes1 = uiaxes("Parent", hGrid);
 hAxes2 = uiaxes("Parent", hGrid);
 
-gfx.orbit3d(hAxes1)
-gfx.orbit3d(hAxes2)
+gfx.orbit3d(hAxes1);
+gfx.orbit3d(hAxes2);
 
 mesh = load('trimesh3d');
 

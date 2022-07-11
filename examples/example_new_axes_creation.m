@@ -8,6 +8,6 @@ patch("Vertices", [mesh.x mesh.y mesh.z], "Faces", mesh.tri, "FaceColor", "y");
 gfx.newUiAxes3d;
 patch("Vertices", [mesh.x mesh.y mesh.z], "Faces", mesh.tri, "FaceColor", "r");
 
-%% equivalent to cla: clear the red mesh of the current figure and plot a new blue one
+%% equivalent to cla(): clear the red mesh of the current figure and plot a new blue one
 gfx.clearOrNewUiAxes3d;
 patch("Vertices", [mesh.x mesh.y mesh.z], "Faces", mesh.tri, "FaceColor", "b");
