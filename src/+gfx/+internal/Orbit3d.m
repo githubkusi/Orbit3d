@@ -10,12 +10,16 @@ classdef Orbit3d < handle
         function self = Orbit3d(hAxes)
             hFig = ancestor(hAxes, 'figure');
             hFig.WindowButtonDownFcn = @self.buttonDownCallback;
+            hFig.WindowButtonUpFcn = @self.buttonUpCallback;
             hFig.WindowScrollWheelFcn = @self.scrollWheelCallback;
             hFig.KeyPressFcn = @self.keyPressCallback;
             hAxes.DataAspectRatio = [1 1 1];
             hAxes.CameraTargetMode = 'manual';
             hAxes.CameraViewAngleMode = 'manual';
-            axis(hAxes, 'off')
+            hAxes.CameraPositionMode = 'auto';
+            hAxes.CameraUpVectorMode = 'auto';
+            axis(hAxes, 'off');
+            hold(hAxes, 'on');
             self.getOrNewLight(hAxes);
         end
 
@@ -60,25 +64,31 @@ classdef Orbit3d < handle
                 return
             end
 
+            hAxes.CameraPositionMode = 'manual';
+            hAxes.CameraUpVectorMode = 'manual';
+
             switch hFig.SelectionType
                 case 'normal'
                     self.getOrNewLight(hAxes);
                     hFig = ancestor(hAxes, 'figure');
                     hFig.WindowButtonMotionFcn = @self.buttonMotionCallback;
-                    hFig.WindowButtonUpFcn = @self.buttonUpCallback;
                     self.currentPoint = hFig.CurrentPoint;
 
-                case 'alt'
+                case 'open'
                     pickedPoint = gfx.internal.geometry.picker(hFig.CurrentObject);
                     if ~isempty(pickedPoint)
                         hAxes.CameraTarget = pickedPoint';
+                    end
+
+                case 'alt'
+                    if isfield(hFig.UserData, 'RightButtonDownFcn')
+                        hFig.UserData.RightButtonDownFcn(hFig.CurrentObject)
                     end
             end
         end
 
         function buttonMotionCallback(self, hFig, ~)
             hAxes = self.findAxesOfCurrentObject(hFig);
-
             cpDelta = hFig.CurrentPoint - self.currentPoint;
             self.currentPoint = hFig.CurrentPoint;
 
@@ -107,6 +117,9 @@ classdef Orbit3d < handle
 
         function buttonUpCallback(~, hFig, ~)
             hFig.WindowButtonMotionFcn = [];
+            if isfield(hFig.UserData, 'RightButtonUpFcn')
+                hFig.UserData.RightButtonUpFcn(hFig.CurrentObject)
+            end
         end
 
         function scrollWheelCallback(self, hFig, scrollWheelData)
@@ -154,9 +167,13 @@ classdef Orbit3d < handle
         end
 
         function keyPressCallback(self, hFig, keyData)
-            hAxes = self.findAxesOfCurrentObject(hFig);
+            if isempty(hFig.CurrentObject) && keyData.Character ~= 'h'
+                disp('Click first on an object')
+            end
+
             switch keyData.Character
                 case 'r'
+                    hAxes = self.findAxesOfCurrentObject(hFig);
                     self.resetView(hAxes)
 
                 case 'w'
@@ -202,16 +219,32 @@ classdef Orbit3d < handle
         end
 
         function toggleColor(~, hObj)
-            if isa(hObj, 'matlab.graphics.primitive.Patch')
-                [r, g, b] = meshgrid(0:1,0:1,0:1);
-                rgb = [r(:) g(:) b(:)];
-                [~, idx] = min(sum(abs(rgb - hObj.FaceColor), 2));
-                hObj.FaceColor = rgb(gfx.internal.math.mod1(idx + 1, 8), :);
+            [r, g, b] = meshgrid(0:1,0:1,0:1);
+            rgb = [r(:) g(:) b(:)];
+
+            switch class(hObj)
+                case 'matlab.graphics.primitive.Patch'
+                    [~, idx] = min(sum(abs(rgb - hObj.FaceColor), 2));
+                    hObj.FaceColor = rgb(gfx.internal.math.mod1(idx + 1, 8), :);
+
+                case 'matlab.graphics.chart.primitive.Line'
+                    [~, idx] = min(sum(abs(rgb - hObj.Color), 2));
+                    hObj.Color = rgb(gfx.internal.math.mod1(idx + 1, 8), :);
             end
         end
 
         function toggleHelp(~, hFig)
-            
+            hHelp = findobj(hFig, "Tag", "help");
+            if isempty(hHelp)
+                uilabel("Parent",hFig,"Text","right click: rotate obj",                     "Position", [10 10 200 20], "Tag","help")
+                uilabel("Parent",hFig,"Text","double right click: set new rotation center", "Position", [10 30 300 20], "Tag","help")
+                uilabel("Parent",hFig,"Text","r: reset view",                               "Position", [10 50 200 20], "Tag","help")
+                uilabel("Parent",hFig,"Text","w: wireframe",                                "Position", [10 70 200 20], "Tag","help")
+                uilabel("Parent",hFig,"Text","c: next color",                               "Position", [10 90 200 20], "Tag","help")
+                uilabel("Parent",hFig,"Text","t: transparency",                             "Position", [10 110 200 20], "Tag","help")
+            else
+                delete(hHelp)
+            end
         end
     end
 end
