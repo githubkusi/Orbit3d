@@ -9,6 +9,12 @@ function [dist, segIdx, pCurve, tCurve, pLine, tLine] = curveLine(ptsCurve, p0Li
 %    tCurve   [1x1] pCurve = normalized length from begin to pCurve
 %    pLine    [1x1] Closest point on line
 %    tLine    [1x1] pLine = p0Line + tLine * vLine
+%
+%  AUTHOR
+%    Copyright 2022, Markus Leuthold, markus.leuthold@sonova.com
+%
+%  LICENSE
+%    BSD-3-Clause (https://opensource.org/licenses/BSD-3-Clause)
 
 segP0 = ptsCurve(:, 1:end-1);
 segP1 = ptsCurve(:, 2:end);
@@ -24,24 +30,24 @@ lenghtToClosestPoint = gfx.internal.geometry.curve.length([ptsCurve(:, 1:segIdx)
 tCurve = lenghtToClosestPoint / gfx.internal.geometry.curve.length(ptsCurve);
 
 
-%% alternative algo: 
+%% alternative algo:
 % %First get the closest point rather than checking distance to each segment.
 % %This performs better for many points than the algo above, but has more
 % %function calls.
-% % 
+% %
 % % Get closest real point. Closest point is either on the previous or next
 % % segment
 % distLinePoints = geometry.distance.linePoint(p0Line, vLine, ptsCurve);
 % [~, idxClosest] = min(distLinePoints);
-% 
+%
 % % Get previous/next segment of real point
 % [idx0, idx1] = geometry.curve.surroundingSegmentIdxOfPointIdx(ptsCurve, idxClosest);
 % p0 = ptsCurve(:, idx0);
 % p1 = ptsCurve(:, idx1);
-% 
+%
 % % distance of pre/post-segment to line
 % [dists, pSegs, pLines, ~, tLines] = geometry.distance.segmentLine(p0, p1, p0Line, vLine);
-% 
+%
 % % choose between pre and post
 % [~, idxPrePost] = min(math.length(pSegs - pLines));
 % pCurve = pSegs(:, idxPrePost);
@@ -49,6 +55,6 @@ tCurve = lenghtToClosestPoint / gfx.internal.geometry.curve.length(ptsCurve);
 % tLine = tLines(idxPrePost);
 % segIdx = idx0(idxPrePost);
 % dist = dists(idxPrePost);
-% 
+%
 % lenghtToClosestPoint = geometry.curve.length([ptsCurve(:, 1:segIdx) pCurve]);
 % tCurve = lenghtToClosestPoint / geometry.curve.length(ptsCurve);

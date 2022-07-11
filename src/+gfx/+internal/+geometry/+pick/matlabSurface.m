@@ -5,10 +5,15 @@ function pt = matlabSurface(hSurface, cursorline)
 %
 %  IN
 %    surf: matlab.graphics.chart.primitive.Surface
-%  OUT
-%    pt:   primitives.Point
 %
-%  surf perpendicular to screen plane is not supported
+%  OUT
+%    pt:   [3x1], picked point
+%
+%  AUTHOR
+%    Copyright 2022, Markus Leuthold, markus.leuthold@sonova.com
+%
+%  LICENSE
+%    BSD-3-Clause (https://opensource.org/licenses/BSD-3-Clause)
 
 n = hSurface.FaceNormals(:,:)';
 assert(all(size(n)==[3 1]),'unknown case, needs investigation');

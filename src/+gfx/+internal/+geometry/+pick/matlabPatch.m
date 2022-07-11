@@ -11,6 +11,12 @@ function [pt, triangleId] = matlabPatch(hPatch, cursorline)
 %  OUT
 %     pt:         [3x1] or [] if no hit
 %     triangleId:
+%
+%  AUTHOR
+%    Copyright 2022, Markus Leuthold, markus.leuthold@sonova.com
+%
+%  LICENSE
+%    BSD-3-Clause (https://opensource.org/licenses/BSD-3-Clause)
 
 if nargin==1
     hAxis = ancestor(hPatch, 'axes');

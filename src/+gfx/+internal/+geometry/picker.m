@@ -2,17 +2,21 @@ function [pt, triangleId] = picker(hObj)
 %GEOMETRY.PICKER
 %  [pt, triangleId]=geometry.picker(hObj)
 %
-%IN
-%  hObj: matlab.graphics.primitive.Patch
-%        matlab.graphics.chart.primitive.Surface
-%        matlab.graphics.primitive.Line
-%        matlab.graphics.chart.primitive.Line
+%  IN
+%    hObj: matlab.graphics.primitive.Patch
+%          matlab.graphics.chart.primitive.Surface
+%          matlab.graphics.primitive.Line
+%          matlab.graphics.chart.primitive.Line
 %
-%OUT
-%  pt: [3x1], point under mouse cursor on object
-%      Empty if not hit
+%  OUT
+%    pt: [3x1], point under mouse cursor on object. Empty if not hit
+%    triangleId: triangle id containing the clicked point on surface
 %
-%  triangleId: triangle id containing the clicked point on surface
+%  AUTHOR
+%    Copyright 2022, Markus Leuthold, markus.leuthold@sonova.com
+%
+%  LICENSE
+%    BSD-3-Clause (https://opensource.org/licenses/BSD-3-Clause)
 
 triangleId = [];
 

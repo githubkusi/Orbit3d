@@ -9,6 +9,12 @@ function [pt, dst] = matlabLine(hLine)
 %  OUT
 %     pt:         primitives.Point on the line
 %     dist:       Distance from the picked point to the line
+%
+%  AUTHOR
+%    Copyright 2022, Markus Leuthold, markus.leuthold@sonova.com
+%
+%  LICENSE
+%    BSD-3-Clause (https://opensource.org/licenses/BSD-3-Clause)
 
 hAxis = ancestor(hLine, 'axes');
 d = hAxis.CurrentPoint;

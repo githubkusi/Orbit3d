@@ -9,6 +9,12 @@ function [is, t] = linePlane(planeCoeff, linePoint, lineDir)
 %  OUTPUT
 %    is:   [3 x nLines]    : intersection points
 %    t:    [1 x nLines]    : is = linePoint + t*lineDir
+%
+%  AUTHOR
+%    Copyright 2022, Markus Leuthold, markus.leuthold@sonova.com
+%
+%  LICENSE
+%    BSD-3-Clause (https://opensource.org/licenses/BSD-3-Clause)
 
 nLines = size(linePoint, 2);
 is = zeros(3, nLines);
