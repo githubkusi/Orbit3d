@@ -144,7 +144,7 @@ classdef Orbit3d < handle
             %Old ax.CurrentPoint was under the cursor before the zoom. move it back under
             %the cursor
             currentPoints = hAxes.CurrentPoint';
-            [~, new] = geometry.distance.linePoint(oldPoints(:,1), oldPoints(:,2)-oldPoints(:,1), currentPoints(:,1));
+            [~, new] = gfx.internal.geometry.distance.linePoint(oldPoints(:,1), oldPoints(:,2)-oldPoints(:,1), currentPoints(:,1));
             v = new - currentPoints(:,1);
             hAxes.CameraTarget = hAxes.CameraTarget + v';
         end
