@@ -143,28 +143,7 @@ classdef Orbit3d < handle
             hAxes = self.findAxesOfCurrentObject(hFig);
             cpDelta = hFig.CurrentPoint - self.currentPoint;
             self.currentPoint = hFig.CurrentPoint;
-
-            speed = 0.02;
-            w = cpDelta * speed;
-            xfCam = self.getCameraTransform(hAxes);
-
-            qx = gfx.internal.math.Quaternion.angleaxis(w(2), [0;1;0]);
-            qy = gfx.internal.math.Quaternion.angleaxis(-w(1), [1;0;0]);
-            q = qx*qy;
-
-            xfQ = eye(4);
-            xfQ(1:3, 1:3) = q.RotationMatrix;
-
-            dstCam = norm(hAxes.CameraPosition - hAxes.CameraTarget);
-            v = eye(4);
-            v(1:3, 4) = [0;0;1]*dstCam;
-
-            xfNewCam = xfCam * v * xfQ * inv(v); %#ok<MINV>
-
-            self.setCameraTransform(hAxes, xfNewCam)
-
-            hLight = self.getOrNewLight(hAxes);
-            hLight.Position = xfNewCam(1:3, 4)';
+            self.updateRotation(hAxes, cpDelta)
         end
 
         function buttonUpCallback(self, hFig, ~)
@@ -242,6 +221,30 @@ classdef Orbit3d < handle
                 case 'h'
                     self.toggleHelp(hFig)
             end
+        end
+
+        function updateRotation(self, hAxes, cpDelta)
+            speed = 0.02;
+            w = cpDelta * speed;
+            xfCam = self.getCameraTransform(hAxes);
+
+            qx = gfx.internal.math.Quaternion.angleaxis(w(2), [0;1;0]);
+            qy = gfx.internal.math.Quaternion.angleaxis(-w(1), [1;0;0]);
+            q = qx*qy;
+
+            xfQ = eye(4);
+            xfQ(1:3, 1:3) = q.RotationMatrix;
+
+            dstCam = norm(hAxes.CameraPosition - hAxes.CameraTarget);
+            v = eye(4);
+            v(1:3, 4) = [0;0;1]*dstCam;
+
+            xfNewCam = xfCam * v * xfQ * inv(v); %#ok<MINV>
+
+            self.setCameraTransform(hAxes, xfNewCam)
+
+            hLight = self.getOrNewLight(hAxes);
+            hLight.Position = hAxes.CameraPosition;
         end
 
         function resetView(~, hAxes)
