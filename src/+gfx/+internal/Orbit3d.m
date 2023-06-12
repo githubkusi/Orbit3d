@@ -120,6 +120,7 @@ classdef Orbit3d < handle
 
             switch hFig.SelectionType
                 case 'normal'
+                    % left click
                     self.getOrNewLight(hAxes);
                     hFig = ancestor(hAxes, 'figure');
                     dispatcher = hFig.UserData.FigureEventDispatcher;
@@ -127,12 +128,14 @@ classdef Orbit3d < handle
                     self.currentPoint = hFig.CurrentPoint;
 
                 case 'open'
+                    % double click
                     pickedPoint = gfx.internal.geometry.picker(hFig.CurrentObject);
                     if ~isempty(pickedPoint)
                         hAxes.CameraTarget = pickedPoint';
                     end
 
                 case 'alt'
+                    % right click
                     if isfield(hFig.UserData, 'RightButtonDownFcn')
                         hFig.UserData.RightButtonDownFcn(hFig.CurrentObject)
                     end
