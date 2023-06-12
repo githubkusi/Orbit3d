@@ -53,6 +53,12 @@ classdef Orbit3d < handle
             self.getOrNewLight(hAxes);
         end
 
+        function tf = isAxesObject(~, h)
+            % a ui control such as a slider is of no interest for Orbit3d
+            cls = class(h);
+            tf = cls == "matlab.ui.control.UIAxes" || startsWith(cls, "matlab.graphics");
+        end
+
         function hLight = getOrNewLight(~, hAxes)
             hLight = findobj(hAxes, 'type', 'Light');
             if isempty(hLight)
@@ -89,6 +95,12 @@ classdef Orbit3d < handle
         end
 
         function buttonDownCallback(self, hFig, ~)
+            if ~self.isAxesObject(hFig.CurrentObject)
+                % Interacting with a GUI element such as a slider would as
+                % well trigger Orbit3d which is unwanted
+                return
+            end
+
             hAxes = self.findAxesOfCurrentObject(hFig); %#ok<*PROPLC>
             if isempty(hAxes)
                 return
