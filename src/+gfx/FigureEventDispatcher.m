@@ -1,0 +1,70 @@
+classdef FigureEventDispatcher < handle
+    %FIGUREEVENTDISPATCHER Dispatch user events from figure to callbacks
+    %   User events such as mouse buttons up/down/move are only available
+    %   for figures but not for axes. If you have multiple axes which need
+    %   callbacks for keyboard or mouse, you need an event dispatcher which
+    %   forwards figure events to axes-oriented objects such as
+    %   gfx.internal.Orbit3d
+    %
+    %   matlab.ui.eventdata.WindowMouseData
+    %   matlab.ui.eventdata.ScrollWheelData
+    %   matlab.ui.eventdata.KeyData
+
+    properties
+        eventList
+    end
+
+    methods
+        function self = FigureEventDispatcher(hFigure)
+            arguments
+                hFigure matlab.ui.Figure
+            end
+
+            hFigure.WindowButtonDownFcn = @self.eventCallback;
+            hFigure.WindowButtonMotionFcn = @self.eventCallback;
+            hFigure.WindowButtonUpFcn = @self.eventCallback;
+            hFigure.WindowScrollWheelFcn = @self.eventCallback;
+            hFigure.WindowKeyPressFcn = @self.eventCallback;
+            hFigure.WindowKeyReleaseFcn = @self.eventCallback;
+            hFigure.KeyPressFcn = @self.eventCallback;
+        end
+
+        function uid = addEvent(self, eventName, fcn, eventFilterFcn)
+            arguments
+                self
+                eventName {mustBeMember(eventName, ["WindowMousePress" "WindowMouseMotion" "WindowMouseRelease" "WindowKeyPress" "WindowKeyRelease" "KeyPress" "WindowScrollWheel"])}
+                fcn   function_handle
+                eventFilterFcn = @(~, ~)true
+            end
+
+            uid = randi(1e10);
+
+            s.name = eventName;
+            s.fcn = fcn;
+            s.filterFcn = eventFilterFcn;
+            s.uid = uid;
+
+            self.eventList = [self.eventList s];
+        end
+
+        function editEvent(self, uid, fcn)
+            idx = [self.eventList.uid] == uid;
+            assert(nnz(idx)==1, 'event not found or ambiguous')
+            self.eventList(idx).fcn = fcn;
+        end
+    end
+
+    methods(Hidden)
+        function eventCallback(self, hFig, event)
+            % disp(event.EventName)
+            tfEventName =  [self.eventList.name] == event.EventName;
+            tfEventFilter = arrayfun(@(x)(x.filterFcn(hFig, event)), self.eventList);
+
+            for k = find(tfEventName & tfEventFilter)
+                fcn = self.eventList(k).fcn;
+                % disp("dispatch " + event.EventName + " to " + func2str(fcn))
+                fcn(hFig, event);
+            end
+        end
+    end
+end

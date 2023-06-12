@@ -34,15 +34,22 @@ classdef Orbit3d < handle
 
     properties
         currentPoint % xy
+        motionEventUid
     end
 
     methods
-        function self = Orbit3d(hAxes)
-            hFig = ancestor(hAxes, 'figure');
-            hFig.WindowButtonDownFcn = @self.buttonDownCallback;
-            hFig.WindowButtonUpFcn = @self.buttonUpCallback;
-            hFig.WindowScrollWheelFcn = @self.scrollWheelCallback;
-            hFig.KeyPressFcn = @self.keyPressCallback;
+        function self = Orbit3d(hAxes, figureEventDispatcher)
+            figureEventDispatcher.addEvent(...
+                "WindowMousePress", @self.buttonDownCallback, @(hFig,~)hFig.CurrentAxes == hAxes);
+            self.motionEventUid = figureEventDispatcher.addEvent(...
+                "WindowMouseMotion", @(~, ~)[], @(hFig,~)hFig.CurrentAxes == hAxes);
+            figureEventDispatcher.addEvent(...
+                "WindowMouseRelease", @self.buttonUpCallback, @(hFig,~)hFig.CurrentAxes == hAxes);
+            figureEventDispatcher.addEvent(...
+                "WindowScrollWheel", @self.scrollWheelCallback, @(hFig,~)hFig.CurrentAxes == hAxes);
+            figureEventDispatcher.addEvent(...
+                "KeyPress", @self.keyPressCallback, @(hFig,~)hFig.CurrentAxes == hAxes);
+
             hAxes.DataAspectRatio = [1 1 1];
             hAxes.CameraTargetMode = 'auto';
             hAxes.CameraViewAngleMode = 'auto';
@@ -115,7 +122,8 @@ classdef Orbit3d < handle
                 case 'normal'
                     self.getOrNewLight(hAxes);
                     hFig = ancestor(hAxes, 'figure');
-                    hFig.WindowButtonMotionFcn = @self.buttonMotionCallback;
+                    dispatcher = hFig.UserData.FigureEventDispatcher;
+                    dispatcher.editEvent(self.motionEventUid, @self.buttonMotionCallback)
                     self.currentPoint = hFig.CurrentPoint;
 
                 case 'open'
@@ -159,8 +167,10 @@ classdef Orbit3d < handle
             hLight.Position = xfNewCam(1:3, 4)';
         end
 
-        function buttonUpCallback(~, hFig, ~)
-            hFig.WindowButtonMotionFcn = [];
+        function buttonUpCallback(self, hFig, ~)
+            dispatcher = hFig.UserData.FigureEventDispatcher;
+            dispatcher.editEvent(self.motionEventUid, @(~,~)[]);
+
             if isfield(hFig.UserData, 'RightButtonUpFcn')
                 hFig.UserData.RightButtonUpFcn(hFig.CurrentObject)
             end
