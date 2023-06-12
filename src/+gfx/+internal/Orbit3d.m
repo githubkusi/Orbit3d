@@ -44,8 +44,8 @@ classdef Orbit3d < handle
             hFig.WindowScrollWheelFcn = @self.scrollWheelCallback;
             hFig.KeyPressFcn = @self.keyPressCallback;
             hAxes.DataAspectRatio = [1 1 1];
-            hAxes.CameraTargetMode = 'manual';
-            hAxes.CameraViewAngleMode = 'manual';
+            hAxes.CameraTargetMode = 'auto';
+            hAxes.CameraViewAngleMode = 'auto';
             hAxes.CameraPositionMode = 'auto';
             hAxes.CameraUpVectorMode = 'auto';
             axis(hAxes, 'off');
@@ -96,6 +96,8 @@ classdef Orbit3d < handle
 
             hAxes.CameraPositionMode = 'manual';
             hAxes.CameraUpVectorMode = 'manual';
+            hAxes.CameraViewAngleMode = 'manual';
+            hAxes.CameraTargetMode = 'manual';
 
             switch hFig.SelectionType
                 case 'normal'
@@ -221,11 +223,7 @@ classdef Orbit3d < handle
         end
 
         function resetView(~, hAxes)
-            hAxes.CameraViewAngleMode = 'auto';
-            hAxes.CameraTargetMode = 'auto';
-            drawnow;
-            hAxes.CameraViewAngleMode = 'manual';
-            hAxes.CameraTargetMode = 'manual';
+            gfx.resetView(hAxes);
         end
 
         function toggleWireframe(~, hObj)
