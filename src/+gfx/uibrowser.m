@@ -5,20 +5,26 @@ if isempty(hBrowser)
     hBrowser.Name = 'Object Browser';
 end
 
-h = findobj('type', 'patch', '-or', 'type', 'line');
-
-gl = uigridlayout("Parent", hBrowser);
-
 colors = dictionary('patch', 'FaceColor', 'line', 'Color');
 
-for k = 1:length(h)
-    if ~isempty(h(k).DisplayName)
-        hButton = uibutton(gl, 'state');
-        hButton.Value = h(k).Visible;
-        hButton.Text = h(k).DisplayName;
-        hButton.ValueChangedFcn = @stateChanged;
-        hButton.UserData.hObj = h(k);
-        hButton.BackgroundColor = h(k).(colors(h(k).Type));
+% each axes has its own layout
+glAxes = uigridlayout("Parent", hBrowser);
+
+for hAxes = findobj('type', 'axes')'
+    h = findobj(hAxes, 'type', 'patch', '-or', 'type', 'line');
+
+    gl = uigridlayout("Parent", glAxes);
+    gl.BackgroundColor = [0.97 0.97 0.97];
+
+    for k = 1:length(h)
+        if ~isempty(h(k).DisplayName)
+            hButton = uibutton(gl, 'state');
+            hButton.Value = h(k).Visible;
+            hButton.Text = h(k).DisplayName;
+            hButton.ValueChangedFcn = @stateChanged;
+            hButton.UserData.hObj = h(k);
+            hButton.BackgroundColor = h(k).(colors(h(k).Type));
+        end
     end
 end
 
