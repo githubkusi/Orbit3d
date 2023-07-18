@@ -1,6 +1,6 @@
-function hAxes = clearOrNewUiAxes3d(hParent)
-if nargin == 0
-    hParent = gfx.getCurrentOrCreateUiFigure;
+function clearUiAxes3d(hParent)
+arguments
+    hParent = gfx.getCurrentOrCreateUiFigure % normally figure or axis
 end
 hAxes = gfx.getCurrentOrCreateUiAxes(hParent);
 
