@@ -13,6 +13,7 @@ classdef Orbit3d < handle
     %     Key w:                    Toggle wireframe of selected patch
     %     Key c:                    Toggle color of selected obj
     %     Key g:                    Toggle grid
+    %     Key b:                    Show object browser
     %     Key h:                    Show help
     %
     %   USAGE
@@ -240,6 +241,8 @@ classdef Orbit3d < handle
                 case self.keyboardShortcuts.Grid
                     self.toggleGrid(hFig.CurrentAxes)
 
+                case self.keyboardShortcuts.ObjectBrowser
+                    gfx.uibrowser(hFig);
 
                 case self.keyboardShortcuts.Help
                     self.toggleHelp(hFig)
@@ -340,6 +343,7 @@ classdef Orbit3d < handle
                 uilabel("Parent",hFig,"Text","c: next color",                               "Position", [10 110 200 20], "Tag","help");
                 uilabel("Parent",hFig,"Text","t: transparency",                             "Position", [10 130 200 20], "Tag","help");
                 uilabel("Parent",hFig,"Text","g: grid",                                     "Position", [10 150 200 20], "Tag","help");
+                uilabel("Parent",hFig,"Text","b: object browser",                           "Position", [10 130 200 20], "Tag","help");
             else
                 delete(hHelp)
             end
