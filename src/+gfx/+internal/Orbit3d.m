@@ -11,6 +11,7 @@ classdef Orbit3d < handle
     %     Key t:                    Toggle transparency of selected obj
     %     Key w:                    Toggle wireframe of selected patch
     %     Key c:                    Toggle color of selected obj
+    %     Key b:                    Show object browser
     %     Key h:                    Show help
     %
     %   USER DEFINED RIGHT-CLICK
@@ -215,6 +216,9 @@ classdef Orbit3d < handle
                 case 'c'
                     self.toggleColor(hFig.CurrentObject)
 
+                case 'b'
+                    gfx.uibrowser;
+
                 case 'h'
                     self.toggleHelp(hFig)
             end
@@ -292,6 +296,7 @@ classdef Orbit3d < handle
                 uilabel("Parent",hFig,"Text","w: wireframe",                                "Position", [10 70 200 20], "Tag","help");
                 uilabel("Parent",hFig,"Text","c: next color",                               "Position", [10 90 200 20], "Tag","help");
                 uilabel("Parent",hFig,"Text","t: transparency",                             "Position", [10 110 200 20], "Tag","help");
+                uilabel("Parent",hFig,"Text","b: object browser",                           "Position", [10 130 200 20], "Tag","help");
             else
                 delete(hHelp)
             end
