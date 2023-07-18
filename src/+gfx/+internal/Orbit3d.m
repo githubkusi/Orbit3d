@@ -217,7 +217,7 @@ classdef Orbit3d < handle
                     self.toggleColor(hFig.CurrentObject)
 
                 case 'b'
-                    gfx.uibrowser;
+                    gfx.uibrowser(hFig);
 
                 case 'h'
                     self.toggleHelp(hFig)

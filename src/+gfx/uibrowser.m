@@ -1,4 +1,8 @@
-function hBrowser = uibrowser
+function hBrowser = uibrowser(hFigure)
+arguments
+    hFigure = gcf
+end
+
 hBrowser = findobj('Tag', 'browser');
 if isempty(hBrowser)
     hBrowser = uifigure(Tag="browser", HandleVisibility="on");
@@ -10,7 +14,7 @@ colors = dictionary('patch', 'FaceColor', 'line', 'Color');
 % each axes has its own layout
 glAxes = uigridlayout("Parent", hBrowser);
 
-for hAxes = findobj('type', 'axes')'
+for hAxes = findobj(hFigure, 'type', 'axes')'
     h = findobj(hAxes, 'type', 'patch', '-or', 'type', 'line');
 
     gl = uigridlayout("Parent", glAxes);
