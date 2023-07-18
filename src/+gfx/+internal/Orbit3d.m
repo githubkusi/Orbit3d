@@ -174,7 +174,7 @@ classdef Orbit3d < handle
             %   w(s)=a*s^2 + c
             wFar = 30;  %angle far
             wNear = 0.01; %angle near
-            r = 35;   %range: go in r clicks from near to far
+            r = 70;   %range: go in r clicks from near to far
             a = (wFar-wNear)/r^2;    %a,b,c: coeffs of quad eq
             c = wNear;
 
