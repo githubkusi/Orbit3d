@@ -51,10 +51,6 @@ classdef Orbit3d < handle
                 "KeyPress", @self.keyPressCallback, @(hFig,~)hFig.CurrentAxes == hAxes);
 
             hAxes.DataAspectRatio = [1 1 1];
-            hAxes.CameraTargetMode = 'auto';
-            hAxes.CameraViewAngleMode = 'auto';
-            hAxes.CameraPositionMode = 'auto';
-            hAxes.CameraUpVectorMode = 'auto';
             axis(hAxes, 'off');
             hold(hAxes, 'on');
             self.getOrNewLight(hAxes);
