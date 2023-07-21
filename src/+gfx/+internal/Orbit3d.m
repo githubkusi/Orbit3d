@@ -40,15 +40,15 @@ classdef Orbit3d < handle
     methods
         function self = Orbit3d(hAxes, figureEventDispatcher)
             figureEventDispatcher.addEvent(...
-                "WindowMousePress", @self.buttonDownCallback, @(hFig,~)hFig.CurrentAxes == hAxes);
+                "WindowMousePress", @self.buttonDownCallback, hAxes);
             self.motionEventUid = figureEventDispatcher.addEvent(...
-                "WindowMouseMotion", @(~, ~)[], @(hFig,~)hFig.CurrentAxes == hAxes);
+                "WindowMouseMotion", @(~, ~)[], hAxes);
             figureEventDispatcher.addEvent(...
-                "WindowMouseRelease", @self.buttonUpCallback, @(hFig,~)hFig.CurrentAxes == hAxes);
+                "WindowMouseRelease", @self.buttonUpCallback, hAxes);
             figureEventDispatcher.addEvent(...
-                "WindowScrollWheel", @self.scrollWheelCallback, @(hFig,~)hFig.CurrentAxes == hAxes);
+                "WindowScrollWheel", @self.scrollWheelCallback, hAxes);
             figureEventDispatcher.addEvent(...
-                "KeyPress", @self.keyPressCallback, @(hFig,~)hFig.CurrentAxes == hAxes);
+                "KeyPress", @self.keyPressCallback, hAxes);
 
             hAxes.DataAspectRatio = [1 1 1];
             axis(hAxes, 'off');
@@ -120,7 +120,7 @@ classdef Orbit3d < handle
                     self.getOrNewLight(hAxes);
                     hFig = ancestor(hAxes, 'figure');
                     dispatcher = hFig.UserData.FigureEventDispatcher;
-                    dispatcher.editEvent(self.motionEventUid, @self.buttonMotionCallback)
+                    dispatcher.editEvent(hAxes, self.motionEventUid, @self.buttonMotionCallback)
                     self.currentPoint = hFig.CurrentPoint;
 
                 case 'open'
@@ -147,7 +147,7 @@ classdef Orbit3d < handle
 
         function buttonUpCallback(self, hFig, ~)
             dispatcher = hFig.UserData.FigureEventDispatcher;
-            dispatcher.editEvent(self.motionEventUid, @(~,~)[]);
+            dispatcher.editEvent(hFig.CurrentAxes, self.motionEventUid, @(~,~)[]);
 
             if isfield(hFig.UserData, 'RightButtonUpFcn')
                 hFig.UserData.RightButtonUpFcn(hFig.CurrentObject)

@@ -29,11 +29,12 @@ classdef FigureEventDispatcher < handle
             hFigure.KeyPressFcn = @self.eventCallback;
         end
 
-        function uid = addEvent(self, eventName, fcn, eventFilterFcn)
+        function uid = addEvent(self, eventName, fcn, hAxes, eventFilterFcn)
             arguments
                 self
                 eventName {mustBeMember(eventName, ["WindowMousePress" "WindowMouseMotion" "WindowMouseRelease" "WindowKeyPress" "WindowKeyRelease" "KeyPress" "WindowScrollWheel"])}
                 fcn   function_handle
+                hAxes matlab.ui.control.UIAxes
                 eventFilterFcn = @(~, ~)true
             end
 
@@ -44,24 +45,29 @@ classdef FigureEventDispatcher < handle
             s.filterFcn = eventFilterFcn;
             s.uid = uid;
 
-            self.eventList = [self.eventList s];
+            if isfield(hAxes.UserData, 'UiEventList')
+                hAxes.UserData.UiEventList = [hAxes.UserData.UiEventList s];
+            else
+                hAxes.UserData.UiEventList = s;
+            end
         end
 
-        function editEvent(self, uid, fcn)
-            idx = [self.eventList.uid] == uid;
+        function editEvent(self, hAxes, uid, fcn)
+            idx = [hAxes.UserData.UiEventList.uid] == uid;
             assert(nnz(idx)==1, 'event not found or ambiguous')
-            self.eventList(idx).fcn = fcn;
+            hAxes.UserData.UiEventList(idx).fcn = fcn;
         end
     end
 
     methods(Hidden)
         function eventCallback(self, hFig, event)
-            % disp(event.EventName)
-            tfEventName =  [self.eventList.name] == event.EventName;
-            tfEventFilter = arrayfun(@(x)(x.filterFcn(hFig, event)), self.eventList);
+            evList = hFig.CurrentAxes.UserData.UiEventList;
+
+            tfEventName =  [evList.name] == event.EventName;
+            tfEventFilter = arrayfun(@(x)(x.filterFcn(hFig, event)), evList);
 
             for k = find(tfEventName & tfEventFilter)
-                fcn = self.eventList(k).fcn;
+                fcn = evList(k).fcn;
                 % disp("dispatch " + event.EventName + " to " + func2str(fcn))
                 fcn(hFig, event);
             end
