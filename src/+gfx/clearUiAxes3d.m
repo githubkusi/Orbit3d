@@ -1,8 +1,8 @@
 function hAxes = clearUiAxes3d(hParent)
 arguments
-    hParent = gfx.getCurrentOrCreateUiFigure % normally figure or axis
+    hParent = gfx.currentUiFigure % normally figure or axis
 end
-hAxes = gfx.getCurrentOrCreateUiAxes(hParent);
+hAxes = gfx.currentUiAxes(hParent);
 
 % Delete old callbacks, to avoid double callbacks. They are recreated with gfx.orbit3d
 if isfield(hAxes.UserData, 'UiEventList')
