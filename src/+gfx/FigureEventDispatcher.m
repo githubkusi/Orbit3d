@@ -10,10 +10,6 @@ classdef FigureEventDispatcher < handle
     %   matlab.ui.eventdata.ScrollWheelData
     %   matlab.ui.eventdata.KeyData
 
-    properties
-        eventList
-    end
-
     methods
         function self = FigureEventDispatcher(hFigure)
             arguments
@@ -29,9 +25,11 @@ classdef FigureEventDispatcher < handle
             hFigure.KeyPressFcn = @self.eventCallback;
         end
 
-        function uid = addEvent(self, eventName, fcn, hAxes, eventFilterFcn)
+    end
+
+    methods(Static)
+        function uid = addEvent(eventName, fcn, hAxes, eventFilterFcn)
             arguments
-                self
                 eventName {mustBeMember(eventName, ["WindowMousePress" "WindowMouseMotion" "WindowMouseRelease" "WindowKeyPress" "WindowKeyRelease" "KeyPress" "WindowScrollWheel"])}
                 fcn   function_handle
                 hAxes matlab.ui.control.UIAxes
@@ -52,15 +50,15 @@ classdef FigureEventDispatcher < handle
             end
         end
 
-        function editEvent(self, hAxes, uid, fcn)
+        function editEvent(hAxes, uid, fcn)
             idx = [hAxes.UserData.UiEventList.uid] == uid;
             assert(nnz(idx)==1, 'event not found or ambiguous')
             hAxes.UserData.UiEventList(idx).fcn = fcn;
         end
     end
 
-    methods(Hidden)
-        function eventCallback(self, hFig, event)
+    methods(Static, Hidden)
+        function eventCallback(hFig, event)
             evList = hFig.CurrentAxes.UserData.UiEventList;
 
             tfEventName =  [evList.name] == event.EventName;
