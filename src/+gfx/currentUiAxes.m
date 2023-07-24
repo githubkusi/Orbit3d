@@ -1,6 +1,6 @@
-function hAxes = getCurrentOrCreateUiAxes(hParent)
-if nargin == 0
-    hParent = gfx.getCurrentOrCreateUiFigure;
+function hAxes = currentUiAxes(hParent)
+arguments
+    hParent = gfx.currentUiFigure;
 end
 
 hAxes = findobj(hParent, 'type', 'axes');

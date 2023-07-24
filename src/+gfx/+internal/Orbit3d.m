@@ -27,30 +27,39 @@ classdef Orbit3d < handle
     %     uiaxes()
     %
     %   AUTHOR
-    %     Copyright 2022, Markus Leuthold, markus.leuthold@sonova.com
+    %     Copyright 2022-2023, Markus Leuthold, markus.leuthold@sonova.com
     %
     %   LICENSE
     %     BSD-3-Clause (https://opensource.org/licenses/BSD-3-Clause)
 
     properties
         currentPoint % xy
+        motionEventUid
     end
 
     methods
         function self = Orbit3d(hAxes)
-            hFig = ancestor(hAxes, 'figure');
-            hFig.WindowButtonDownFcn = @self.buttonDownCallback;
-            hFig.WindowButtonUpFcn = @self.buttonUpCallback;
-            hFig.WindowScrollWheelFcn = @self.scrollWheelCallback;
-            hFig.KeyPressFcn = @self.keyPressCallback;
+            gfx.FigureEventDispatcher.addEvent(...
+                "WindowMousePress", @self.buttonDownCallback, hAxes);
+            self.motionEventUid = gfx.FigureEventDispatcher.addEvent(...
+                "WindowMouseMotion", @(~, ~)[], hAxes);
+            gfx.FigureEventDispatcher.addEvent(...
+                "WindowMouseRelease", @self.buttonUpCallback, hAxes);
+            gfx.FigureEventDispatcher.addEvent(...
+                "WindowScrollWheel", @self.scrollWheelCallback, hAxes);
+            gfx.FigureEventDispatcher.addEvent(...
+                "KeyPress", @self.keyPressCallback, hAxes);
+
             hAxes.DataAspectRatio = [1 1 1];
-            hAxes.CameraTargetMode = 'manual';
-            hAxes.CameraViewAngleMode = 'manual';
-            hAxes.CameraPositionMode = 'auto';
-            hAxes.CameraUpVectorMode = 'auto';
             axis(hAxes, 'off');
             hold(hAxes, 'on');
             self.getOrNewLight(hAxes);
+        end
+
+        function tf = isAxesObject(~, h)
+            % a ui control such as a slider is of no interest for Orbit3d
+            cls = class(h);
+            tf = cls == "matlab.ui.control.UIAxes" || startsWith(cls, "matlab.graphics");
         end
 
         function hLight = getOrNewLight(~, hAxes)
@@ -89,6 +98,12 @@ classdef Orbit3d < handle
         end
 
         function buttonDownCallback(self, hFig, ~)
+            if ~self.isAxesObject(hFig.CurrentObject)
+                % Interacting with a GUI element such as a slider would as
+                % well trigger Orbit3d which is unwanted
+                return
+            end
+
             hAxes = self.findAxesOfCurrentObject(hFig); %#ok<*PROPLC>
             if isempty(hAxes)
                 return
@@ -96,21 +111,26 @@ classdef Orbit3d < handle
 
             hAxes.CameraPositionMode = 'manual';
             hAxes.CameraUpVectorMode = 'manual';
+            hAxes.CameraViewAngleMode = 'manual';
+            hAxes.CameraTargetMode = 'manual';
 
             switch hFig.SelectionType
                 case 'normal'
+                    % left click
                     self.getOrNewLight(hAxes);
                     hFig = ancestor(hAxes, 'figure');
-                    hFig.WindowButtonMotionFcn = @self.buttonMotionCallback;
+                    gfx.FigureEventDispatcher.editEvent(hAxes, self.motionEventUid, @self.buttonMotionCallback)
                     self.currentPoint = hFig.CurrentPoint;
 
                 case 'open'
+                    % double click
                     pickedPoint = gfx.internal.geometry.picker(hFig.CurrentObject);
                     if ~isempty(pickedPoint)
                         hAxes.CameraTarget = pickedPoint';
                     end
 
                 case 'alt'
+                    % right click
                     if isfield(hFig.UserData, 'RightButtonDownFcn')
                         hFig.UserData.RightButtonDownFcn(hFig.CurrentObject)
                     end
@@ -121,32 +141,12 @@ classdef Orbit3d < handle
             hAxes = self.findAxesOfCurrentObject(hFig);
             cpDelta = hFig.CurrentPoint - self.currentPoint;
             self.currentPoint = hFig.CurrentPoint;
-
-            speed = 0.02;
-            w = cpDelta * speed;
-            xfCam = self.getCameraTransform(hAxes);
-
-            qx = gfx.internal.math.Quaternion.angleaxis(w(2), [0;1;0]);
-            qy = gfx.internal.math.Quaternion.angleaxis(-w(1), [1;0;0]);
-            q = qx*qy;
-
-            xfQ = eye(4);
-            xfQ(1:3, 1:3) = q.RotationMatrix;
-
-            dstCam = norm(hAxes.CameraPosition - hAxes.CameraTarget);
-            v = eye(4);
-            v(1:3, 4) = [0;0;1]*dstCam;
-
-            xfNewCam = xfCam * v * xfQ * inv(v); %#ok<MINV>
-
-            self.setCameraTransform(hAxes, xfNewCam)
-
-            hLight = self.getOrNewLight(hAxes);
-            hLight.Position = xfNewCam(1:3, 4)';
+            self.updateRotation(hAxes, cpDelta)
         end
 
-        function buttonUpCallback(~, hFig, ~)
-            hFig.WindowButtonMotionFcn = [];
+        function buttonUpCallback(self, hFig, ~)
+            gfx.FigureEventDispatcher.editEvent(hFig.CurrentAxes, self.motionEventUid, @(~,~)[]);
+
             if isfield(hFig.UserData, 'RightButtonUpFcn')
                 hFig.UserData.RightButtonUpFcn(hFig.CurrentObject)
             end
@@ -168,7 +168,7 @@ classdef Orbit3d < handle
             %   w(s)=a*s^2 + c
             wFar = 30;  %angle far
             wNear = 0.01; %angle near
-            r = 35;   %range: go in r clicks from near to far
+            r = 70;   %range: go in r clicks from near to far
             a = (wFar-wNear)/r^2;    %a,b,c: coeffs of quad eq
             c = wNear;
 
@@ -220,12 +220,32 @@ classdef Orbit3d < handle
             end
         end
 
+        function updateRotation(self, hAxes, cpDelta)
+            speed = 0.02;
+            w = cpDelta * speed;
+            xfCam = self.getCameraTransform(hAxes);
+
+            qx = gfx.internal.math.Quaternion.angleaxis(w(2), [0;1;0]);
+            qy = gfx.internal.math.Quaternion.angleaxis(-w(1), [1;0;0]);
+            q = qx*qy;
+
+            xfQ = eye(4);
+            xfQ(1:3, 1:3) = q.RotationMatrix;
+
+            dstCam = norm(hAxes.CameraPosition - hAxes.CameraTarget);
+            v = eye(4);
+            v(1:3, 4) = [0;0;1]*dstCam;
+
+            xfNewCam = xfCam * v * xfQ * inv(v); %#ok<MINV>
+
+            self.setCameraTransform(hAxes, xfNewCam)
+
+            hLight = self.getOrNewLight(hAxes);
+            hLight.Position = hAxes.CameraPosition;
+        end
+
         function resetView(~, hAxes)
-            hAxes.CameraViewAngleMode = 'auto';
-            hAxes.CameraTargetMode = 'auto';
-            drawnow;
-            hAxes.CameraViewAngleMode = 'manual';
-            hAxes.CameraTargetMode = 'manual';
+            gfx.resetView(hAxes);
         end
 
         function toggleWireframe(~, hObj)
