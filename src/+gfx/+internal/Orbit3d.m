@@ -38,16 +38,16 @@ classdef Orbit3d < handle
     end
 
     methods
-        function self = Orbit3d(hAxes, figureEventDispatcher)
-            figureEventDispatcher.addEvent(...
+        function self = Orbit3d(hAxes)
+            gfx.FigureEventDispatcher.addEvent(...
                 "WindowMousePress", @self.buttonDownCallback, hAxes);
-            self.motionEventUid = figureEventDispatcher.addEvent(...
+            self.motionEventUid = gfx.FigureEventDispatcher.addEvent(...
                 "WindowMouseMotion", @(~, ~)[], hAxes);
-            figureEventDispatcher.addEvent(...
+            gfx.FigureEventDispatcher.addEvent(...
                 "WindowMouseRelease", @self.buttonUpCallback, hAxes);
-            figureEventDispatcher.addEvent(...
+            gfx.FigureEventDispatcher.addEvent(...
                 "WindowScrollWheel", @self.scrollWheelCallback, hAxes);
-            figureEventDispatcher.addEvent(...
+            gfx.FigureEventDispatcher.addEvent(...
                 "KeyPress", @self.keyPressCallback, hAxes);
 
             hAxes.DataAspectRatio = [1 1 1];
@@ -119,8 +119,7 @@ classdef Orbit3d < handle
                     % left click
                     self.getOrNewLight(hAxes);
                     hFig = ancestor(hAxes, 'figure');
-                    dispatcher = hFig.UserData.FigureEventDispatcher;
-                    dispatcher.editEvent(hAxes, self.motionEventUid, @self.buttonMotionCallback)
+                    gfx.FigureEventDispatcher.editEvent(hAxes, self.motionEventUid, @self.buttonMotionCallback)
                     self.currentPoint = hFig.CurrentPoint;
 
                 case 'open'
@@ -146,8 +145,7 @@ classdef Orbit3d < handle
         end
 
         function buttonUpCallback(self, hFig, ~)
-            dispatcher = hFig.UserData.FigureEventDispatcher;
-            dispatcher.editEvent(hFig.CurrentAxes, self.motionEventUid, @(~,~)[]);
+            gfx.FigureEventDispatcher.editEvent(hFig.CurrentAxes, self.motionEventUid, @(~,~)[]);
 
             if isfield(hFig.UserData, 'RightButtonUpFcn')
                 hFig.UserData.RightButtonUpFcn(hFig.CurrentObject)

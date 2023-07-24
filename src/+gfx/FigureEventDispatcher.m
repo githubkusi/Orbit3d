@@ -10,24 +10,21 @@ classdef FigureEventDispatcher < handle
     %   matlab.ui.eventdata.ScrollWheelData
     %   matlab.ui.eventdata.KeyData
 
-    methods
-        function self = FigureEventDispatcher(hFigure)
+    methods(Static)
+        function setupFigureCallbacks(hFigure)
             arguments
                 hFigure matlab.ui.Figure
             end
-
-            hFigure.WindowButtonDownFcn = @self.eventCallback;
-            hFigure.WindowButtonMotionFcn = @self.eventCallback;
-            hFigure.WindowButtonUpFcn = @self.eventCallback;
-            hFigure.WindowScrollWheelFcn = @self.eventCallback;
-            hFigure.WindowKeyPressFcn = @self.eventCallback;
-            hFigure.WindowKeyReleaseFcn = @self.eventCallback;
-            hFigure.KeyPressFcn = @self.eventCallback;
+            
+            hFigure.WindowButtonDownFcn = @gfx.FigureEventDispatcher.eventCallback;
+            hFigure.WindowButtonMotionFcn = @gfx.FigureEventDispatcher.eventCallback;
+            hFigure.WindowButtonUpFcn = @gfx.FigureEventDispatcher.eventCallback;
+            hFigure.WindowScrollWheelFcn = @gfx.FigureEventDispatcher.eventCallback;
+            hFigure.WindowKeyPressFcn = @gfx.FigureEventDispatcher.eventCallback;
+            hFigure.WindowKeyReleaseFcn = @gfx.FigureEventDispatcher.eventCallback;
+            hFigure.KeyPressFcn = @gfx.FigureEventDispatcher.eventCallback;
         end
 
-    end
-
-    methods(Static)
         function uid = addEvent(eventName, fcn, hAxes, eventFilterFcn)
             arguments
                 eventName {mustBeMember(eventName, ["WindowMousePress" "WindowMouseMotion" "WindowMouseRelease" "WindowKeyPress" "WindowKeyRelease" "KeyPress" "WindowScrollWheel"])}

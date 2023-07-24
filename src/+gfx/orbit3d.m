@@ -31,8 +31,5 @@ function orbit3d(hAxes)
 %     BSD-3-Clause (https://opensource.org/licenses/BSD-3-Clause)
 
 hFig = ancestor(hAxes, 'figure');
-if ~isfield(hFig.UserData, 'FigureEventDispatcher')
-    hFig.UserData.FigureEventDispatcher = gfx.FigureEventDispatcher(hFig);
-end
-
-hAxes.UserData.orbit3d = gfx.internal.Orbit3d(hAxes, hFig.UserData.FigureEventDispatcher);
+gfx.FigureEventDispatcher.setupFigureCallbacks(hFig);
+hAxes.UserData.orbit3d = gfx.internal.Orbit3d(hAxes);
