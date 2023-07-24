@@ -33,7 +33,7 @@ classdef FigureEventDispatcher < handle
                 eventName {mustBeMember(eventName, ["WindowMousePress" "WindowMouseMotion" "WindowMouseRelease" "WindowKeyPress" "WindowKeyRelease" "KeyPress" "WindowScrollWheel"])}
                 fcn   function_handle
                 hAxes matlab.ui.control.UIAxes
-                eventFilterFcn = @(~, ~)true
+                eventFilterFcn function_handle = @(~, ~)true
             end
 
             uid = randi(1e10);
@@ -51,6 +51,11 @@ classdef FigureEventDispatcher < handle
         end
 
         function editEvent(hAxes, uid, fcn)
+            arguments
+                hAxes matlab.ui.control.UIAxes
+                uid
+                fcn   function_handle
+            end
             idx = [hAxes.UserData.UiEventList.uid] == uid;
             assert(nnz(idx)==1, 'event not found or ambiguous')
             hAxes.UserData.UiEventList(idx).fcn = fcn;
