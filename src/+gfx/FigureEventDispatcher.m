@@ -1,21 +1,40 @@
 classdef FigureEventDispatcher < handle
-    %FIGUREEVENTDISPATCHER Dispatch user events from figure to callbacks
+    %FIGUREEVENTDISPATCHER Dispatch user events from figure to axes
     %   User events such as mouse buttons up/down/move are only available
-    %   for figures but not for axes. If you have multiple axes which need
-    %   callbacks for keyboard or mouse, you need an event dispatcher which
-    %   forwards figure events to axes-oriented objects such as
-    %   gfx.internal.Orbit3d
+    %   for figures but not for axes. If you have multiple axes or multiple
+    %   listeners for the same axes which need callbacks for keyboard or
+    %   mouse, you need an event dispatcher which forwards figure events to
+    %   axes-oriented objects such as gfx.orbit3d()
     %
-    %   matlab.ui.eventdata.WindowMouseData
-    %   matlab.ui.eventdata.ScrollWheelData
-    %   matlab.ui.eventdata.KeyData
+    %   The following Matlab figure event can be added for each axes
+    %      WindowMousePress
+    %      WindowMouseMotion
+    %      WindowMouseRelease
+    %      WindowKeyPress
+    %      WindowKeyRelease
+    %      KeyPress
+    %      WindowScrollWheel
+    %
+    %   EXAMPLE
+    %      hGrid = uigridlayout;
+    %      hAxes1 = uiaxes("Parent", hGrid);
+    %      hAxes2 = uiaxes("Parent", hGrid);
+    %      gfx.FigureEventDispatcher.setupFigureCallbacks(hGrid.Parent)
+    %      gfx.FigureEventDispatcher.addEvent("WindowMousePress", @(hFig, event)disp("axes1 clicked"), hAxes1);
+    %      gfx.FigureEventDispatcher.addEvent("WindowMousePress", @(hFig, event)disp("axes2 clicked"), hAxes2);
+    %
+    %   AUTHOR
+    %     Copyright 2023, Markus Leuthold, markus.leuthold@sonova.com
+    %
+    %   LICENSE
+    %     BSD-3-Clause (https://opensource.org/licenses/BSD-3-Clause)
 
     methods(Static)
         function setupFigureCallbacks(hFigure)
             arguments
                 hFigure matlab.ui.Figure
             end
-            
+
             hFigure.WindowButtonDownFcn = @gfx.FigureEventDispatcher.eventCallback;
             hFigure.WindowButtonMotionFcn = @gfx.FigureEventDispatcher.eventCallback;
             hFigure.WindowButtonUpFcn = @gfx.FigureEventDispatcher.eventCallback;
@@ -28,7 +47,10 @@ classdef FigureEventDispatcher < handle
         function uid = addEvent(eventName, fcn, hAxes, eventFilterFcn)
             arguments
                 eventName {mustBeMember(eventName, ["WindowMousePress" "WindowMouseMotion" "WindowMouseRelease" "WindowKeyPress" "WindowKeyRelease" "KeyPress" "WindowScrollWheel"])}
-                fcn   function_handle
+                fcn function_handle  % callback @(hFig, event), event is one of
+                %                      matlab.ui.eventdata.WindowMouseData
+                %                      matlab.ui.eventdata.ScrollWheelData
+                %                      matlab.ui.eventdata.KeyData
                 hAxes matlab.ui.control.UIAxes
                 eventFilterFcn function_handle = @(~, ~)true
             end

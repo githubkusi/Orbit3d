@@ -27,7 +27,7 @@ classdef Orbit3d < handle
     %     uiaxes()
     %
     %   AUTHOR
-    %     Copyright 2022, Markus Leuthold, markus.leuthold@sonova.com
+    %     Copyright 2022-2023, Markus Leuthold, markus.leuthold@sonova.com
     %
     %   LICENSE
     %     BSD-3-Clause (https://opensource.org/licenses/BSD-3-Clause)
