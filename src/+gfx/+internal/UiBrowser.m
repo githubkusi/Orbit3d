@@ -1,6 +1,6 @@
 classdef UiBrowser < handle
-    %UNTITLED Summary of this class goes here
-    %   Detailed explanation goes here
+    %UIBROWSER graphic object browser
+    %   Replacement of Matlab's old plotbrowser
 
     properties
         hFigure
@@ -16,8 +16,16 @@ classdef UiBrowser < handle
             self.buildGui;
         end
 
+        function windowKeyPressCallback(~, ~, evnt)
+            switch evnt.Key
+                case 'q'
+                    delete(findobj('Tag', 'browser'))
+            end
+        end
+
         function buildGui(self)
             hBrowser = findobj('Tag', 'browser');
+            hBrowser.WindowKeyPressFcn = @self.windowKeyPressCallback;
 
             colorProperty = dictionary('patch', 'FaceColor', 'line', 'Color');
 
@@ -43,7 +51,14 @@ classdef UiBrowser < handle
                     continue
                 end
 
-                gl = uigridlayout(glParentAxes, [1 1]);
+                if self.showNamelessItems && numel(h) > 4 || ...
+                        ~self.showNamelessItems && numel(findobj(hAxes, 'type', 'patch', '-or', 'type', 'line', '-not', 'DisplayName','')) > 4
+                    gridSize = [1 2];
+                else
+                    gridSize = [1 1];
+                end
+
+                gl = uigridlayout(glParentAxes, gridSize);
                 gl.BackgroundColor = [0.97 0.97 0.97];
 
                 for k = 1:length(h)
@@ -63,7 +78,7 @@ classdef UiBrowser < handle
             btn.UserData.hObj.Visible = evnt.Value;
         end
 
-        function showNamelessItemsChanged(self, cbx, evnt)
+        function showNamelessItemsChanged(self, ~, evnt)
             self.showNamelessItems = evnt.Value;
             self.buildGui;
         end
