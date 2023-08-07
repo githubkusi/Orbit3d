@@ -3,7 +3,8 @@ arguments
     hParent = gfx.currentUiFigure;
 end
 
-hAxes = findobj(hParent, 'type', 'axes');
+hFigure = ancestor(hParent, 'figure');
+hAxes = hFigure.CurrentAxes;
 if isempty(hAxes)
     hAxes = uiaxes(hParent, Parent=hParent);
 
