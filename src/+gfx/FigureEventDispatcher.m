@@ -116,6 +116,10 @@ classdef FigureEventDispatcher < handle
             assert(nnz(idx)==1, 'event not found or ambiguous')
             hObj.UserData.UiEventList(idx).fcn = fcn;
         end
+
+        function deleteEvent(hObj, uids)
+            idx = ismember([hObj.UserData.UiEventList.uid], uids);
+            hObj.UserData.UiEventList(idx) = [];
         end
     end
 
@@ -126,7 +130,7 @@ classdef FigureEventDispatcher < handle
             tfEventName =  [evList.name] == event.EventName;
             tfEventFilter = arrayfun(@(x)(x.filterFcn(hFig, event)), evList);
 
-            for k = find(tfEventName & tfEventFilter)                
+            for k = find(tfEventName & tfEventFilter)
                 fcn = evList(k).fcn;
                 % disp("dispatch " + event.EventName + " to " + func2str(fcn))
                 fcn(hFig, event);
