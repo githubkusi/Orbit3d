@@ -6,6 +6,9 @@ classdef FigureEventDispatcher < handle
     %   mouse, you need an event dispatcher which forwards figure events to
     %   axes-oriented objects such as gfx.orbit3d()
     %
+    %   If global figure events are needed, you must use addFigureEvent()
+    %   rather than directly assign the callbacks to the figure
+    %
     %   The following Matlab figure event can be added for each axes
     %      WindowMousePress
     %      WindowMouseMotion
@@ -15,14 +18,23 @@ classdef FigureEventDispatcher < handle
     %      KeyPress
     %      WindowScrollWheel
     %
+    %   You may register a new event to an
+    %   - axes object: event is only fired for current axes
+    %   - figure object: event is always fired
+    %
     %   EXAMPLE
+    %      Create figure with two axes. Clicking on axes1 prints "axes1
+    %      clicked", clicking on axes2 prints "axes2 clicked". Pressing a
+    %      key no matter which axes is selected prints "key pressed"
+    %
     %      hGrid = uigridlayout;
     %      hAxes1 = uiaxes("Parent", hGrid);
     %      hAxes2 = uiaxes("Parent", hGrid);
     %      gfx.FigureEventDispatcher.setupFigureCallbacks(hGrid.Parent)
-    %      gfx.FigureEventDispatcher.addEvent("WindowMousePress", @(hFig, event)disp("axes1 clicked"), hAxes1);
-    %      gfx.FigureEventDispatcher.addEvent("WindowMousePress", @(hFig, event)disp("axes2 clicked"), hAxes2);
-    %
+    %      gfx.FigureEventDispatcher.addAxesEvent("WindowMousePress", @(hFig, event)disp("axes1 clicked"), hAxes1);
+    %      gfx.FigureEventDispatcher.addAxesEvent("WindowMousePress", @(hFig, event)disp("axes2 clicked"), hAxes2);
+    %      gfx.FigureEventDispatcher.addFigureEvent("KeyPress", @(hFig, event)disp("key pressed"), hGrid.Parent);
+    %    
     %   AUTHOR
     %     Copyright 2023, Markus Leuthold, markus.leuthold@sonova.com
     %
@@ -42,9 +54,13 @@ classdef FigureEventDispatcher < handle
             hFigure.WindowKeyPressFcn = @gfx.FigureEventDispatcher.eventCallback;
             hFigure.WindowKeyReleaseFcn = @gfx.FigureEventDispatcher.eventCallback;
             hFigure.KeyPressFcn = @gfx.FigureEventDispatcher.eventCallback;
+
+            if ~isfield(hFigure.UserData, 'UiEventList')
+                hFigure.UserData.UiEventList = [];
+            end
         end
 
-        function uid = addEvent(eventName, fcn, hAxes, eventFilterFcn)
+        function uid = addAxesEvent(eventName, fcn, hAxes, eventFilterFcn)
             arguments
                 eventName {mustBeMember(eventName, ["WindowMousePress" "WindowMouseMotion" "WindowMouseRelease" "WindowKeyPress" "WindowKeyRelease" "KeyPress" "WindowScrollWheel"])}
                 fcn function_handle  % callback @(hFig, event), event is one of
@@ -69,21 +85,47 @@ classdef FigureEventDispatcher < handle
             end
         end
 
-        function editEvent(hAxes, uid, fcn)
+        function uid = addFigureEvent(eventName, fcn, hFigure, eventFilterFcn)
             arguments
-                hAxes matlab.ui.control.UIAxes
+                eventName {mustBeMember(eventName, ["WindowMousePress" "WindowMouseMotion" "WindowMouseRelease" "WindowKeyPress" "WindowKeyRelease" "KeyPress" "WindowScrollWheel"])}
+                fcn function_handle  % callback @(hFig, event), event is one of
+                %                      matlab.ui.eventdata.WindowMouseData
+                %                      matlab.ui.eventdata.ScrollWheelData
+                %                      matlab.ui.eventdata.KeyData
+                hFigure matlab.ui.Figure
+                eventFilterFcn function_handle = @(~, ~)true
+            end
+
+            uid = randi(1e10);
+
+            s.name = eventName;
+            s.fcn = fcn;
+            s.filterFcn = eventFilterFcn;
+            s.uid = uid;
+
+            hFigure.UserData.UiEventList = [hFigure.UserData.UiEventList s];
+        end
+
+        function editEvent(hObj, uid, fcn)
+            arguments
+                hObj
                 uid
                 fcn   function_handle
             end
-            idx = [hAxes.UserData.UiEventList.uid] == uid;
+            idx = [hObj.UserData.UiEventList.uid] == uid;
             assert(nnz(idx)==1, 'event not found or ambiguous')
-            hAxes.UserData.UiEventList(idx).fcn = fcn;
+            hObj.UserData.UiEventList(idx).fcn = fcn;
+        end
+
+        function deleteEvent(hObj, uids)
+            idx = ismember([hObj.UserData.UiEventList.uid], uids);
+            hObj.UserData.UiEventList(idx) = [];
         end
     end
 
     methods(Static, Hidden)
         function eventCallback(hFig, event)
-            evList = hFig.CurrentAxes.UserData.UiEventList;
+            evList = [hFig.UserData.UiEventList hFig.CurrentAxes.UserData.UiEventList];
 
             tfEventName =  [evList.name] == event.EventName;
             tfEventFilter = arrayfun(@(x)(x.filterFcn(hFig, event)), evList);

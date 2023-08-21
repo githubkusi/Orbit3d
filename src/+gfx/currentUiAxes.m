@@ -3,9 +3,10 @@ arguments
     hParent = gfx.currentUiFigure;
 end
 
-hAxes = findobj(hParent, 'type', 'axes');
+hFigure = ancestor(hParent, 'figure');
+hAxes = hFigure.CurrentAxes;
 if isempty(hAxes)
-    hAxes = uiaxes(hParent, Parent=hParent);
+    hAxes = uiaxes(hParent);
 
     if isa(hParent, 'matlab.ui.Figure')
         % Matlab 2021b doesn't center a new uiaxes in a uifigure, as it did
@@ -14,5 +15,5 @@ if isempty(hAxes)
         hAxes.Units = 'normalized';
         hAxes.Position = [0.05 0.05 0.9 0.9];
     end
-    
+
 end

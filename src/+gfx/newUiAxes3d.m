@@ -1,3 +1,5 @@
-function hAxes = newUiAxes3d
-hFig = uifigure("HandleVisibility", "on");
-hAxes = gfx.clearUiAxes3d(hFig);
+function hAxes = newUiAxes3d(hParent)
+arguments
+    hParent = uifigure("HandleVisibility", "on");
+end
+hAxes = gfx.clearUiAxes3d(hParent);
