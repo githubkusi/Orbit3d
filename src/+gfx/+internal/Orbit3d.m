@@ -270,7 +270,11 @@ classdef Orbit3d < handle
 
             switch class(hObj)
                 case 'matlab.graphics.primitive.Patch'
-                    [~, idx] = min(sum(abs(rgb - hObj.FaceColor), 2));
+                    if ischar(hObj.FaceColor)
+                        idx = 1;
+                    else
+                        [~, idx] = min(sum(abs(rgb - hObj.FaceColor), 2));
+                    end
                     hObj.FaceColor = rgb(gfx.internal.math.mod1(idx + 1, 8), :);
 
                 case 'matlab.graphics.chart.primitive.Line'
