@@ -3,9 +3,9 @@ classdef Orbit3d < handle
     %   o3d = gfx.internal.Orbit3d;
     %
     %   USER INTERACTIONS
-    %     Right mouse click & move: Rotate objects
-    %     Right double-click:       Set rotation center
-    %     Left click:               User defined callback
+    %     Left mouse click & move:  Rotate objects
+    %     Double click:             Set rotation center
+    %     Right click:              User defined callback
     %     Scroll wheel:             Zoom towards to/away from mouse pointer
     %     Key r:                    Reset view
     %     Key t:                    Toggle transparency of selected obj
@@ -286,12 +286,13 @@ classdef Orbit3d < handle
         function toggleHelp(~, hFig)
             hHelp = findobj(hFig, "Tag", "help");
             if isempty(hHelp)
-                uilabel("Parent",hFig,"Text","right click: rotate obj",                     "Position", [10 10 200 20], "Tag","help");
-                uilabel("Parent",hFig,"Text","double right click: set new rotation center", "Position", [10 30 300 20], "Tag","help");
-                uilabel("Parent",hFig,"Text","r: reset view",                               "Position", [10 50 200 20], "Tag","help");
-                uilabel("Parent",hFig,"Text","w: wireframe",                                "Position", [10 70 200 20], "Tag","help");
-                uilabel("Parent",hFig,"Text","c: next color",                               "Position", [10 90 200 20], "Tag","help");
-                uilabel("Parent",hFig,"Text","t: transparency",                             "Position", [10 110 200 20], "Tag","help");
+                uilabel("Parent",hFig,"Text","left click & move: rotate obj",               "Position", [10 10 200 20], "Tag","help");
+                uilabel("Parent",hFig,"Text","double click: set new rotation center",       "Position", [10 30 300 20], "Tag","help");
+                uilabel("Parent",hFig,"Text","scroll wheel: zoom",                          "Position", [10 50 300 20], "Tag","help");
+                uilabel("Parent",hFig,"Text","r: reset view",                               "Position", [10 70 200 20], "Tag","help");
+                uilabel("Parent",hFig,"Text","w: wireframe",                                "Position", [10 90 200 20], "Tag","help");
+                uilabel("Parent",hFig,"Text","c: next color",                               "Position", [10 110 200 20], "Tag","help");
+                uilabel("Parent",hFig,"Text","t: transparency",                             "Position", [10 130 200 20], "Tag","help");
             else
                 delete(hHelp)
             end

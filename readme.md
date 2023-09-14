@@ -3,19 +3,19 @@ User-friendly, feature rich replacement of Matlab's `cameratoolbar`
 
 Matlab lacks a powerful and user friendly interactive tool to handle 3d objects in a plot. Matlab's own `cameratoolbar` doesn't allow to zoom in/out with the scroll wheel, does not set the light properly and has a quite esoteric orbit function. Furthermore, as of Matlab 2022a, `cameratoolbar` does not support the new web-based `uiaxes`
 
-This toolbox implements a quaternion based 3d orbit. Multiple axes are supported, thanks to a newly implemented per-axes (rather than Matlab's own per-figure) event handler.
+This toolbox implements a quaternion based 3d orbit. Multiple axes are supported, thanks to a newly implemented per-axes (rather than Matlab's own per-figure) event handler. Both the old java based and the new web based figures/axes are supported.
 
 ## Features
 |Event|Action  |
 |--|--|
-|Right click & move  | Rotate objects |
-|Right double-click| Set rotation center|
-|Left click |User defined callback |
+|Left-click & move  | Rotate objects |
+|Double-click | Set rotation center|
+|Right-click |User defined callback |
 |Scroll wheel |Zoom towards to/away from mouse pointer |
 |Key r |Reset view |
 |Key t |Toggle transparency of selected obj |
 |Key w |Toggle wireframe of selected patch |
-|Key c|Toggle color of selected obj |
+|Key c |Toggle color of selected obj |
 |Key h |Show help |
 
 ## Example code
@@ -33,7 +33,11 @@ This toolbox implements a quaternion based 3d orbit. Multiple axes are supported
         "Faces", mesh.tri, ...
         "FaceColor", "y");
 
-Please find more examples in the folder `examples`
+Please find more examples in the folder `examples` about the following topics
+* Simple 3d orbit
+* Multiple uiaxes
+* Per-figure and per-axes callbacks
+* gca/gcf/clf/cla replacements for uiaxes/uifigure containing a 3d orbit
 
 ## Installation
 

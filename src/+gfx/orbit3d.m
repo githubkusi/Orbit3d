@@ -3,9 +3,9 @@ function orbit3d(hAxes)
 %   gfx.orbit3d(hAxes);
 %
 %   USER INTERACTIONS
-%     Right mouse click & move: Rotate objects
-%     Right double-click:       Set rotation center
-%     Left click:               User defined callback
+%     Left mouse click & move:  Rotate objects
+%     Double click:             Set rotation center
+%     Right click:              User defined callback
 %     Scroll wheel:             Zoom towards to/away from mouse pointer
 %     Key r:                    Reset view
 %     Key t:                    Toggle transparency of selected obj
