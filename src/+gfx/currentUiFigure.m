@@ -1,7 +1,8 @@
 function hFig = currentUiFigure
 hRoot = groot;
-if isempty(hRoot.CurrentFigure)
-    hFig = uifigure("HandleVisibility", "on");    
+hFig = hRoot.CurrentFigure;
+if isempty(hFig) || hFig.Tag == "browser"
+    hFig = uifigure("HandleVisibility", "on");
 else
     hFig = hRoot.CurrentFigure;
 end
