@@ -67,7 +67,7 @@ classdef FigureEventDispatcher < handle
                 %                      matlab.ui.eventdata.WindowMouseData
                 %                      matlab.ui.eventdata.ScrollWheelData
                 %                      matlab.ui.eventdata.KeyData
-                hAxes matlab.ui.control.UIAxes
+                hAxes matlab.graphics.axis.Axes
                 eventFilterFcn function_handle = @(~, ~)true
             end
 
