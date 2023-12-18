@@ -113,7 +113,7 @@ classdef FigureEventDispatcher < handle
                 fcn   function_handle
             end
             idx = [hObj.UserData.UiEventList.uid] == uid;
-            assert(nnz(idx)==1, 'event not found or ambiguous')
+            assert(nnz(idx)==1, nnz(idx) + " events found, one expected: ambiguous")
             hObj.UserData.UiEventList(idx).fcn = fcn;
         end
 
