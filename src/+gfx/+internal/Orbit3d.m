@@ -64,8 +64,21 @@ classdef Orbit3d < handle
 
         function tf = isAxesObject(~, h)
             % a ui control such as a slider is of no interest for Orbit3d
+            %
+            % Reject
+            % - matlab.ui.control.{Button, Slider, ...} (web)
+            % - matlab.ui.control.UIControl (java)
+            %
+            % Accept
+            % - matlab.ui.control.UIAxes (web, inherits matlab.graphics.axis.Axes)
+            % - matlab.graphics.axis.Axes (java)
+            % - matlab.graphics.* (patch, line)
+            % - matlab.ui.container.GridLayout
+            % - matlab.ui.Figure (covers both java and web figure)
+
+            % isa(h, 'matlab.graphics.axis.Axes') covers both java and web axes
             cls = class(h);
-            tf = cls == "matlab.ui.control.UIAxes" || startsWith(cls, "matlab.graphics");
+            tf = ~startsWith(cls, "matlab.ui.control") || isa(h, 'matlab.graphics.axis.Axes');
         end
 
         function hLight = getOrNewLight(~, hAxes)
