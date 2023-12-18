@@ -54,3 +54,6 @@ Copyright 2022-2023, Markus Leuthold, markus.leuthold@sonova.com
 
 ## License
 BSD-3-Clause (https://opensource.org/licenses/BSD-3-Clause)
+
+[![View Orbit3d on File Exchange](https://www.mathworks.com/matlabcentral/images/matlab-file-exchange.svg)](https://ch.mathworks.com/matlabcentral/fileexchange/135351-orbit3d)
+
