@@ -149,6 +149,10 @@ classdef Orbit3d < handle
 
         function scrollWheelCallback(~, hFig, scrollWheelData)
             hAxes = hFig.CurrentAxes;
+            if isempty(hAxes)
+                return
+            end
+
             oldPoints = hAxes.CurrentPoint';
 
             %ds =  3: scrollwheel up (away from user)
