@@ -76,19 +76,6 @@ classdef Orbit3d < handle
             end
         end
 
-        function hAxes = findAxesOfCurrentObject(~, hFig)
-            hAxes = ancestor(hFig.CurrentObject, 'axes');
-            if isempty(hAxes)
-                % user didn't click on object. If there is only one axes,
-                % the intention of the user is unambigous, return the only
-                % axes
-                h = findobj(hFig, 'type', 'axes');
-                if isa(h, 'matlab.ui.control.UIAxes') && numel(h) == 1
-                    hAxes = h;
-                end
-            end
-        end
-
         function xf = getCameraTransform(~, hAxes)
             x = hAxes.CameraUpVector';
             z = hAxes.CameraTarget' -  hAxes.CameraPosition';
@@ -110,7 +97,7 @@ classdef Orbit3d < handle
                 return
             end
 
-            hAxes = self.findAxesOfCurrentObject(hFig); %#ok<*PROPLC>
+            hAxes = hFig.CurrentAxes;
             if isempty(hAxes)
                 return
             end
@@ -138,18 +125,17 @@ classdef Orbit3d < handle
         end
 
         function buttonMotionCallback(self, hFig, ~)
-            hAxes = self.findAxesOfCurrentObject(hFig);
             cpDelta = hFig.CurrentPoint - self.currentPoint;
             self.currentPoint = hFig.CurrentPoint;
-            self.updateRotation(hAxes, cpDelta)
+            self.updateRotation(hFig.CurrentAxes, cpDelta)
         end
 
         function buttonUpCallback(self, hFig, ~)
             gfx.FigureEventDispatcher.editEvent(hFig.CurrentAxes, self.motionEventUid, @(~,~)[]);
         end
 
-        function scrollWheelCallback(self, hFig, scrollWheelData)
-            hAxes = self.findAxesOfCurrentObject(hFig);
+        function scrollWheelCallback(~, hFig, scrollWheelData)
+            hAxes = hFig.CurrentAxes;
             oldPoints = hAxes.CurrentPoint';
 
             %ds =  3: scrollwheel up (away from user)
@@ -199,7 +185,7 @@ classdef Orbit3d < handle
 
             switch keyData.Character
                 case 'r'
-                    hAxes = self.findAxesOfCurrentObject(hFig);
+                    hAxes = hFig.CurrentAxes;
                     self.resetView(hAxes)
 
                 case 'w'
