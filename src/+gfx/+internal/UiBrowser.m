@@ -16,10 +16,13 @@ classdef UiBrowser < handle
             self.buildGui;
         end
 
-        function windowKeyPressCallback(~, ~, evnt)
+        function windowKeyPressCallback(self, ~, evnt)
             switch evnt.Key
                 case 'q'
                     delete(findobj('Tag', 'browser'))
+
+                case 'b'
+                    self.buildGui;
             end
         end
 
@@ -27,21 +30,24 @@ classdef UiBrowser < handle
             hBrowser = findobj('Tag', 'browser');
             hBrowser.WindowKeyPressFcn = @self.windowKeyPressCallback;
 
-            colorProperty = dictionary('patch', 'FaceColor', 'line', 'Color');
-
+            guiElement = dictionary(...
+                'patch', @gfx.internal.uibrowser.Patch, ...
+                'line',  @gfx.internal.uibrowser.Line);
 
             glBrowser = uigridlayout(hBrowser, [2 1]);
             glBrowser.RowHeight = {'1x' 35};
 
             % each axes has its own layout
-            glParentAxes = uigridlayout(glBrowser, [1 2]);
+            numAxes = numel(findobj(self.hFigure, 'type', 'axes'));
+            glParentAxes = uigridlayout(glBrowser, [1 numAxes]);
 
             % Tools
             glTools = uigridlayout(glBrowser, [1 1]);
             uicheckbox(glTools, ...
                 "ValueChangedFcn", @self.showNamelessItemsChanged, ...
-                Text="Show items with empty name", ...
-                Value=self.showNamelessItems);
+                Text="Show items with empty DisplayName", ...
+                Value=self.showNamelessItems, ...
+                Tooltip="Show object even if the property 'DisplayName' of the graphic handle is empty");
 
             for hAxes = findobj(self.hFigure, 'type', 'axes')'
                 h = findobj(hAxes, 'type', 'patch', '-or', 'type', 'line');
@@ -63,25 +69,16 @@ classdef UiBrowser < handle
 
                 for k = 1:length(h)
                     if ~isempty(h(k).DisplayName) || self.showNamelessItems
-                        hButton = uibutton(gl, 'state');
-                        hButton.Value = h(k).Visible;
-                        hButton.Text = h(k).DisplayName;
-                        hButton.ValueChangedFcn = @self.isVisibleStateChanged;
-                        hButton.UserData.hObj = h(k);
-                        hButton.BackgroundColor = h(k).(colorProperty(h(k).Type));
+                        fcn = guiElement(h(k).Type);
+                        fcn().createGuiElement(gl, h(k));
                     end
                 end
             end
-        end
-
-        function isVisibleStateChanged(~, btn, evnt)
-            btn.UserData.hObj.Visible = evnt.Value;
         end
 
         function showNamelessItemsChanged(self, ~, evnt)
             self.showNamelessItems = evnt.Value;
             self.buildGui;
         end
-
     end
 end
