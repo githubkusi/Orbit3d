@@ -85,7 +85,7 @@ classdef Orbit3d < handle
             hLight = findobj(hAxes, 'type', 'Light');
             if isempty(hLight)
                 hLight = light('parent', hAxes);
-                hLight.Position = hAxes.CameraPosition;
+                hLight.Position = hAxes.CameraPosition - hAxes.CameraTarget;
             end
         end
 
@@ -240,7 +240,7 @@ classdef Orbit3d < handle
             self.setCameraTransform(hAxes, xfNewCam)
 
             hLight = self.getOrNewLight(hAxes);
-            hLight.Position = hAxes.CameraPosition;
+            hLight.Position = hAxes.CameraPosition - hAxes.CameraTarget;
         end
 
         function resetView(~, hAxes)
