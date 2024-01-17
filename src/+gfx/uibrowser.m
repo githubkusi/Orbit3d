@@ -30,5 +30,5 @@ if isempty(hBrowser)
     hBrowser.Name = 'Object Browser';
     hBrowser.UserData.uiBrowser = gfx.internal.UiBrowser(hFigure);
 else
-    hBrowser.UserData.uiBrowser.buildGui;
+    hBrowser.UserData.uiBrowser.buildGui(hFigure);
 end
