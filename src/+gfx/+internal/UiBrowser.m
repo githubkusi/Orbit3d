@@ -3,7 +3,6 @@ classdef UiBrowser < handle
     %   Replacement of Matlab's old plotbrowser
 
     properties
-        hFigure
         showNamelessItems = false
     end
 
@@ -12,8 +11,7 @@ classdef UiBrowser < handle
             arguments
                 hFigure matlab.ui.Figure = gcf
             end
-            self.hFigure = hFigure;
-            self.buildGui;
+            self.buildGui(hFigure);
         end
 
         function windowKeyPressCallback(self, ~, evnt)
@@ -26,8 +24,12 @@ classdef UiBrowser < handle
             end
         end
 
-        function buildGui(self)
+        function buildGui(self, hFigure)
             hBrowser = findobj('Tag', 'browser');
+
+            % cleanup if there was a previous browser figure
+            delete(hBrowser.Children)
+
             hBrowser.WindowKeyPressFcn = @self.windowKeyPressCallback;
 
             guiElement = dictionary(...
@@ -38,18 +40,18 @@ classdef UiBrowser < handle
             glBrowser.RowHeight = {'1x' 35};
 
             % each axes has its own layout
-            numAxes = numel(findobj(self.hFigure, 'type', 'axes'));
+            numAxes = numel(findobj(hFigure, 'type', 'axes'));
             glParentAxes = uigridlayout(glBrowser, [1 numAxes]);
 
             % Tools
             glTools = uigridlayout(glBrowser, [1 1]);
             uicheckbox(glTools, ...
-                "ValueChangedFcn", @self.showNamelessItemsChanged, ...
+                "ValueChangedFcn", @(~, evnt)self.showNamelessItemsChanged(hFigure, evnt.Value), ...
                 Text="Show items with empty DisplayName", ...
                 Value=self.showNamelessItems, ...
                 Tooltip="Show object even if the property 'DisplayName' of the graphic handle is empty");
 
-            for hAxes = findobj(self.hFigure, 'type', 'axes')'
+            for hAxes = findobj(hFigure, 'type', 'axes')'
                 h = findobj(hAxes, 'type', 'patch', '-or', 'type', 'line');
 
                 if isempty(h)
@@ -76,9 +78,9 @@ classdef UiBrowser < handle
             end
         end
 
-        function showNamelessItemsChanged(self, ~, evnt)
-            self.showNamelessItems = evnt.Value;
-            self.buildGui;
+        function showNamelessItemsChanged(self, hFigure, value)
+            self.showNamelessItems = value;
+            self.buildGui(hFigure);
         end
     end
 end
