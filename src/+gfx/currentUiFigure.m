@@ -1,8 +1,10 @@
 function hFig = currentUiFigure
 hRoot = groot;
-hFig = hRoot.CurrentFigure;
-if isempty(hFig) || hFig.Tag == "browser"
+hFigs = findobj(hRoot.Children, 'type', 'figure', '-not', 'tag', 'browser');
+
+if isempty(hFigs)
     hFig = uifigure("HandleVisibility", "on");
 else
-    hFig = hRoot.CurrentFigure;
+    % the first figure in the array is the current one
+    hFig = hFigs(1);
 end
