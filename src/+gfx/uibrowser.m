@@ -14,6 +14,8 @@ function hBrowser = uibrowser(hFigure)
 %  - Color copied from object, however object style is not yet reflected in
 %    the browser window
 %  - Close browser window with key "q"
+%  - Items are named according <graphichandle>.DisplayName. If DisplayName
+%    is empty, the object doesn't appear in the browser by default.
 %
 %  AUTHOR
 %    Copyright 2022-2023, Markus Leuthold, markus.leuthold@sonova.com
@@ -30,5 +32,9 @@ if isempty(hBrowser)
     hBrowser.Name = 'Object Browser';
     hBrowser.UserData.uiBrowser = gfx.internal.UiBrowser(hFigure);
 else
-    hBrowser.UserData.uiBrowser.buildGui(hFigure);
+    if hFigure.Tag == "browser"
+        disp("The browser window itself is the current figure. Click first on the figure from which you want to have an object browser")
+    else
+        hBrowser.UserData.uiBrowser.buildGui(hFigure);
+    end
 end

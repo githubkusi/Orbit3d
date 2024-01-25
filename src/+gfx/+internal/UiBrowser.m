@@ -14,13 +14,13 @@ classdef UiBrowser < handle
             self.buildGui(hFigure);
         end
 
-        function windowKeyPressCallback(self, ~, evnt)
-            switch evnt.Key
+        function windowKeyPressCallback(self, key, hFigure)
+            switch key
                 case 'q'
                     delete(findobj('Tag', 'browser'))
 
                 case 'b'
-                    self.buildGui;
+                    self.buildGui(hFigure);
             end
         end
 
@@ -30,7 +30,7 @@ classdef UiBrowser < handle
             % cleanup if there was a previous browser figure
             delete(hBrowser.Children)
 
-            hBrowser.WindowKeyPressFcn = @self.windowKeyPressCallback;
+            hBrowser.WindowKeyPressFcn = @(~, evnt)self.windowKeyPressCallback(evnt.Key, hFigure);
 
             guiElement = dictionary(...
                 'patch', @gfx.internal.uibrowser.Patch, ...
