@@ -26,15 +26,9 @@ arguments
     hFigure matlab.ui.Figure = gcf
 end
 
-hBrowser = findobj('Tag', 'browser');
-if isempty(hBrowser)
-    hBrowser = uifigure(Tag="browser", HandleVisibility="on");
+if ~isfield(hFigure.UserData, 'uiBrowser') || ~hFigure.UserData.uiBrowser.hasValidFigure
+    hBrowser = uifigure(Tag="browser", HandleVisibility="off");
     hBrowser.Name = 'Object Browser';
-    hBrowser.UserData.uiBrowser = gfx.internal.UiBrowser(hFigure);
-else
-    if hFigure.Tag == "browser"
-        disp("The browser window itself is the current figure. Click first on the figure from which you want to have an object browser")
-    else
-        hBrowser.UserData.uiBrowser.buildGui(hFigure);
-    end
+    hFigure.UserData.uiBrowser = gfx.internal.UiBrowser(hBrowser, hFigure);
 end
+hFigure.UserData.uiBrowser.buildGui;

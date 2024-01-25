@@ -4,54 +4,51 @@ classdef UiBrowser < handle
 
     properties
         showNamelessItems = false
+        hBrowser
+        hFigure
     end
 
     methods
-        function self = UiBrowser(hFigure)
-            arguments
-                hFigure matlab.ui.Figure = gcf
-            end
-            self.buildGui(hFigure);
+        function self = UiBrowser(hBrowser, hFigure)
+            self.hBrowser = hBrowser;
+            self.hFigure = hFigure;
+            self.hBrowser.WindowKeyPressFcn = @self.windowKeyPressCallback;
         end
 
-        function windowKeyPressCallback(self, key, hFigure)
-            switch key
+        function windowKeyPressCallback(self, ~, evnt)
+            switch evnt.Key
                 case 'q'
-                    delete(findobj('Tag', 'browser'))
+                    delete(self.hBrowser)
 
                 case 'b'
-                    self.buildGui(hFigure);
+                    self.buildGui;
             end
         end
 
-        function buildGui(self, hFigure)
-            hBrowser = findobj('Tag', 'browser');
-
+        function buildGui(self)
             % cleanup if there was a previous browser figure
-            delete(hBrowser.Children)
-
-            hBrowser.WindowKeyPressFcn = @(~, evnt)self.windowKeyPressCallback(evnt.Key, hFigure);
+            delete(self.hBrowser.Children)
 
             guiElement = dictionary(...
                 'patch', @gfx.internal.uibrowser.Patch, ...
                 'line',  @gfx.internal.uibrowser.Line);
 
-            glBrowser = uigridlayout(hBrowser, [2 1]);
+            glBrowser = uigridlayout(self.hBrowser, [2 1]);
             glBrowser.RowHeight = {'1x' 35};
 
             % each axes has its own layout
-            numAxes = numel(findobj(hFigure, 'type', 'axes'));
+            numAxes = numel(findobj(self.hFigure, 'type', 'axes'));
             glParentAxes = uigridlayout(glBrowser, [1 numAxes]);
 
             % Tools
             glTools = uigridlayout(glBrowser, [1 1]);
             uicheckbox(glTools, ...
-                "ValueChangedFcn", @(~, evnt)self.showNamelessItemsChanged(hFigure, evnt.Value), ...
+                "ValueChangedFcn", @(~, evnt)self.showNamelessItemsChanged(evnt.Value), ...
                 Text="Show items with empty DisplayName", ...
                 Value=self.showNamelessItems, ...
                 Tooltip="Show object even if the property 'DisplayName' of the graphic handle is empty");
 
-            for hAxes = findobj(hFigure, 'type', 'axes')'
+            for hAxes = findobj(self.hFigure, 'type', 'axes')'
                 h = findobj(hAxes, 'type', 'patch', '-or', 'type', 'line');
 
                 if isempty(h)
@@ -78,9 +75,13 @@ classdef UiBrowser < handle
             end
         end
 
-        function showNamelessItemsChanged(self, hFigure, value)
+        function showNamelessItemsChanged(self, value)
             self.showNamelessItems = value;
-            self.buildGui(hFigure);
+            self.buildGui;
+        end
+
+        function tf = hasValidFigure(self)
+            tf = isgraphics(self.hBrowser);
         end
     end
 end
