@@ -11,4 +11,5 @@ end
 
 % cla kills the light, therefore the orbit is newly created
 cla(hAxes);
+gfx.resetView;
 gfx.orbit3d(hAxes);
