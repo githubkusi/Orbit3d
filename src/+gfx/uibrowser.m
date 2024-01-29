@@ -31,4 +31,8 @@ if ~isfield(hFigure.UserData, 'uiBrowser') || ~hFigure.UserData.uiBrowser.hasVal
     hBrowser.Name = 'Object Browser';
     hFigure.UserData.uiBrowser = gfx.internal.UiBrowser(hBrowser, hFigure);
 end
+
+% focus browser figure
+figure(hFigure.UserData.uiBrowser.hBrowser);
+
 hFigure.UserData.uiBrowser.buildGui;
