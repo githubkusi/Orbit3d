@@ -56,12 +56,14 @@ classdef UiBrowser < handle
                     continue
                 end
 
-                if self.showNamelessItems && numel(h) > 4 || ...
-                        ~self.showNamelessItems && numel(findobj(hAxes, 'type', 'patch', '-or', 'type', 'line', '-not', 'DisplayName','')) > 4
-                    gridSize = [1 2];
+                hasNoDisplayName = cellfun(@isempty, get(h, 'DisplayName'));
+                if self.showNamelessItems
+                    numItems = numel(h);
                 else
-                    gridSize = [1 1];
+                    numItems = nnz(~hasNoDisplayName);
                 end
+
+                gridSize = [1 floor(sqrt(numItems))];
 
                 gl = uigridlayout(glParentAxes, gridSize);
                 gl.BackgroundColor = [0.97 0.97 0.97];
