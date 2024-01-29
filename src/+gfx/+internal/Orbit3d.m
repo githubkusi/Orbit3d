@@ -353,7 +353,7 @@ classdef Orbit3d < handle
         end
 
         function updateBrowser(~, hFig)
-            if isfield(hFig.UserData, 'uiBrowser') && hFig.UserData.uiBrowser.hasValidFigure
+            if isfield(hFig.UserData, 'uiBrowser') && hFig.UserData.uiBrowser.hasValidBrowserWindow
                 hFig.UserData.uiBrowser.buildGui;
             end
         end

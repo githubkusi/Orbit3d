@@ -80,7 +80,7 @@ classdef UiBrowser < handle
             self.buildGui;
         end
 
-        function tf = hasValidFigure(self)
+        function tf = hasValidBrowserWindow(self)
             tf = isgraphics(self.hBrowser);
         end
     end

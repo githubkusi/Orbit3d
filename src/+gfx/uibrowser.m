@@ -26,7 +26,7 @@ arguments
     hFigure matlab.ui.Figure = gcf
 end
 
-if ~isfield(hFigure.UserData, 'uiBrowser') || ~hFigure.UserData.uiBrowser.hasValidFigure
+if ~isfield(hFigure.UserData, 'uiBrowser') || ~hFigure.UserData.uiBrowser.hasValidBrowserWindow
     hBrowser = uifigure(Tag="browser", HandleVisibility="off");
     hBrowser.Name = 'Object Browser';
     hFigure.UserData.uiBrowser = gfx.internal.UiBrowser(hBrowser, hFigure);
