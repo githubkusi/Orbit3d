@@ -26,6 +26,12 @@ classdef UiBrowser < handle
         end
 
         function buildGui(self)
+            % kill window if the corresponding figure is gone
+            if ~isgraphics(self.hFigure)
+                delete(self.hBrowser)
+                return
+            end
+
             % cleanup if there was a previous browser figure
             delete(self.hBrowser.Children)
 
