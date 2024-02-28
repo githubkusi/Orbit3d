@@ -7,8 +7,9 @@ function hBrowser = uibrowser(hFigure)
 %  and also workswith new web based uifigures (in contrast to plotbrowser,
 %  which only supports the old java-based figures)
 %
-%  FEATUES
+%  FEATURES
 %  - One browser figure per object figure
+%  - Supports objects of type patch/line/hggroup
 %  - Supports multiple axes in one figure
 %  - Visibility on/off
 %  - Color copied from object, however object style is not yet reflected in
