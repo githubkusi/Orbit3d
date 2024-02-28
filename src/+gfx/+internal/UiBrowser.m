@@ -31,7 +31,8 @@ classdef UiBrowser < handle
 
             guiElement = dictionary(...
                 'patch', @gfx.internal.uibrowser.Patch, ...
-                'line',  @gfx.internal.uibrowser.Line);
+                'line',  @gfx.internal.uibrowser.Line, ...
+                'hggroup', @gfx.internal.uibrowser.HgGroup);
 
             glBrowser = uigridlayout(self.hBrowser, [2 1]);
             glBrowser.RowHeight = {'1x' 35};
@@ -49,7 +50,7 @@ classdef UiBrowser < handle
                 Tooltip="Show object even if the property 'DisplayName' of the graphic handle is empty");
 
             for hAxes = findobj(self.hFigure, 'type', 'axes')'
-                h = findobj(hAxes, 'type', 'patch', '-or', 'type', 'line');
+                h = findobj(hAxes, 'type', 'patch', '-or', 'type', 'line', '-or', 'type', 'hggroup');
 
                 if isempty(h)
                     % axes has no content (e.g gui elements)
