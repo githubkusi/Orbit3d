@@ -63,7 +63,7 @@ classdef UiBrowser < handle
                     continue
                 end
 
-                hasNoDisplayName = cellfun(@isempty, get(h, 'DisplayName'));
+                hasNoDisplayName = arrayfun(@(hk)isempty(hk.DisplayName), h);
                 if self.showNamelessItems
                     numItems = numel(h);
                 else
