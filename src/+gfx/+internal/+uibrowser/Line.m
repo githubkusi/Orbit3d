@@ -7,6 +7,11 @@ classdef Line < handle
             hButton.ValueChangedFcn = @gfx.internal.uibrowser.Line.visibleStateChanged;
             hButton.UserData.hObj = hObj;
             hButton.BackgroundColor = hObj.Color;
+
+            % make text readable
+            if vecnorm(hButton.BackgroundColor - hButton.FontColor) < 1.1
+                hButton.FontColor = 1 - hButton.BackgroundColor;
+            end
         end
 
         function visibleStateChanged(btn, evnt)

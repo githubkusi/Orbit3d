@@ -17,6 +17,11 @@ classdef HgGroup < handle
             end
 
             hButton.BackgroundColor = col;
+
+            % make text readable
+            if vecnorm(hButton.BackgroundColor - hButton.FontColor) < 1.1
+                hButton.FontColor = 1 - hButton.BackgroundColor;
+            end
         end
 
         function visibleStateChanged(btn, evnt)
