@@ -70,6 +70,10 @@ classdef UiBrowser < handle
                     numItems = nnz(~hasNoDisplayName);
                 end
 
+                if numItems == 0
+                    continue
+                end
+
                 gridSize = [1 floor(sqrt(numItems))];
 
                 gl = uigridlayout(glParentAxes, gridSize);
