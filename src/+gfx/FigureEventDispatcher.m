@@ -94,6 +94,10 @@ classdef FigureEventDispatcher < handle
                 %                      matlab.ui.eventdata.KeyData
                 hFigure matlab.ui.Figure
                 eventFilterFcn function_handle = @(~, ~)true
+                % eventFilterFcn takes the same two input params as the
+                % second parameter "fcn". The function must return a
+                % logical value: true if the event is accepted, false if
+                % the event is rejected
             end
 
             uid = randi(1e10);
@@ -128,7 +132,8 @@ classdef FigureEventDispatcher < handle
             evList = [hFig.UserData.UiEventList hFig.CurrentAxes.UserData.UiEventList];
 
             tfEventName =  [evList.name] == event.EventName;
-            tfEventFilter = arrayfun(@(x)(x.filterFcn(hFig, event)), evList);
+            tfEventFilter = false(1, numel(tfEventName));
+            tfEventFilter(tfEventName) = arrayfun(@(x)(x.filterFcn(hFig, event)), evList(tfEventName));
 
             for k = find(tfEventName & tfEventFilter)
                 fcn = evList(k).fcn;

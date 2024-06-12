@@ -19,11 +19,19 @@ function orbit3d(hAxes)
 %
 %        hAxes.UserData.orbit3d.keyboardShortcuts.Help = 'off';
 %
-%   USER DEFINED RIGHT-CLICK
-%     hFig.UserData.RightButtonDownFcn is called on right mouse down with
-%     hFig.CurrentObject as parameter
-%     hFig.UserData.RightButtonUpFcn is called on right mouse up with
-%     hFig.CurrentObject as parameter
+%   REGISTERING ADDITIONAL EVENTS
+%     For registering additional keyboard or mouse callbacks, you must
+%     use gfx.FigureEventDispatcher() in order not to destroy Orbit3d's
+%     callbacks
+%
+%     Example of adding a right mouse click callback on hAxes
+%        gfx.FigureEventDispatcher.addAxesEvent(...
+%          "WindowMousePress", @(~,~)disp('right mouse btn'), hAxes, @(f,~)f.SelectionType == "alt");
+%
+%     Example of adding a global keyboard shortcut on hFigure
+%        gfx.FigureEventDispatcher.addFigureEvent(...
+%          "KeyPress", @(~,evnt)disp(evnt.Key), hFigure);
+%
 %
 %   NOTES
 %     Instance of gfx.internal.Orbit3d is kept in hFigure.UserData.orbit3d
