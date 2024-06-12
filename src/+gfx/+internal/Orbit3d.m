@@ -41,10 +41,18 @@ classdef Orbit3d < handle
     properties
         currentPoint % xy
         motionEventUid
+        keyboardShortcuts
     end
 
     methods
         function self = Orbit3d(hAxes)
+            self.keyboardShortcuts.ResetView = 'r';
+            self.keyboardShortcuts.Wireframe = 'w';
+            self.keyboardShortcuts.Transparency = 't';
+            self.keyboardShortcuts.Color = 'c';
+            self.keyboardShortcuts.Help = 'h';
+            self.keyboardShortcuts.ObjectBrowser = 'b';
+
             gfx.FigureEventDispatcher.addAxesEvent(...
                 "WindowMousePress", @self.buttonDownCallback, hAxes);
             self.motionEventUid = gfx.FigureEventDispatcher.addAxesEvent(...
@@ -196,25 +204,25 @@ classdef Orbit3d < handle
         end
 
         function keyPressCallback(self, hFig, keyData)
-            if isempty(hFig.CurrentObject) && keyData.Character ~= 'h'
+            if ~isa(hFig.CurrentObject, 'matlab.graphics.primitive.Patch') && ~isempty(keyData.Character) && ismember(keyData.Character, {self.keyboardShortcuts.Wireframe self.keyboardShortcuts.Transparency self.keyboardShortcuts.Color})
                 disp('Click first on an object')
             end
 
             switch keyData.Character
-                case 'r'
+                case self.keyboardShortcuts.ResetView
                     hAxes = hFig.CurrentAxes;
                     self.resetView(hAxes)
 
-                case 'w'
+                case  self.keyboardShortcuts.Wireframe
                     self.toggleWireframe(hFig.CurrentObject)
 
-                case 't'
+                case self.keyboardShortcuts.Transparency
                     self.toggleTransparency(hFig.CurrentObject)
 
-                case 'c'
+                case self.keyboardShortcuts.Color
                     self.toggleColor(hFig.CurrentObject)
 
-                case 'h'
+                case self.keyboardShortcuts.Help
                     self.toggleHelp(hFig)
             end
         end

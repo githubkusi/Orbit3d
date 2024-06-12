@@ -13,6 +13,12 @@ function orbit3d(hAxes)
 %     Key c:                    Toggle color of selected obj
 %     Key h:                    Show help
 %
+%   USER DEFINED KEYBOARD SHORTCUTS
+%     Keyboards shortcuts are defined in the userdata propery of the axes
+%     Example: Turn off the shortcut 'h' for help
+%
+%        hAxes.UserData.orbit3d.keyboardShortcuts.Help = 'off';
+%
 %   USER DEFINED RIGHT-CLICK
 %     hFig.UserData.RightButtonDownFcn is called on right mouse down with
 %     hFig.CurrentObject as parameter
