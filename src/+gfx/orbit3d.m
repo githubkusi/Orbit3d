@@ -12,6 +12,7 @@ function orbit3d(hAxes)
 %     Key t:                    Toggle transparency of selected obj
 %     Key w:                    Toggle wireframe of selected patch
 %     Key c:                    Toggle color of selected obj
+%     Key g:                    Toggle grid
 %     Key h:                    Show help
 %
 %   USER DEFINED KEYBOARD SHORTCUTS

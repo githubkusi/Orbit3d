@@ -12,6 +12,7 @@ classdef Orbit3d < handle
     %     Key t:                    Toggle transparency of selected obj
     %     Key w:                    Toggle wireframe of selected patch
     %     Key c:                    Toggle color of selected obj
+    %     Key g:                    Toggle grid
     %     Key h:                    Show help
     %
     %   USAGE
@@ -52,6 +53,7 @@ classdef Orbit3d < handle
             self.keyboardShortcuts.Wireframe = 'w';
             self.keyboardShortcuts.Transparency = 't';
             self.keyboardShortcuts.Color = 'c';
+            self.keyboardShortcuts.Grid = 'g';
             self.keyboardShortcuts.Help = 'h';
             self.keyboardShortcuts.ObjectBrowser = 'b';
 
@@ -69,7 +71,10 @@ classdef Orbit3d < handle
                 "KeyRelease", @self.keyReleaseCallback, hAxes);
 
             hAxes.DataAspectRatio = [1 1 1];
+
+            % axis off keeps hAxes.Title.Visible enabled
             axis(hAxes, 'off');
+
             hold(hAxes, 'on');
             self.getOrNewLight(hAxes);
         end
@@ -232,6 +237,9 @@ classdef Orbit3d < handle
                 case self.keyboardShortcuts.Color
                     self.toggleColor(hFig.CurrentObject)
 
+                case self.keyboardShortcuts.Grid
+                    self.toggleGrid(hFig.CurrentAxes)
+
 
                 case self.keyboardShortcuts.Help
                     self.toggleHelp(hFig)
@@ -313,6 +321,14 @@ classdef Orbit3d < handle
             end
         end
 
+        function toggleGrid(~, hAxes)
+            hAxes.Visible = ~hAxes.Visible;
+            grid(hAxes, "on");
+            xlabel(hAxes, "x");
+            ylabel(hAxes, "y");
+            zlabel(hAxes, "z");
+        end
+
         function toggleHelp(~, hFig)
             hHelp = findobj(hFig, "Tag", "help");
             if isempty(hHelp)
@@ -323,6 +339,7 @@ classdef Orbit3d < handle
                 uilabel("Parent",hFig,"Text","w: wireframe",                                "Position", [10 90 200 20], "Tag","help");
                 uilabel("Parent",hFig,"Text","c: next color",                               "Position", [10 110 200 20], "Tag","help");
                 uilabel("Parent",hFig,"Text","t: transparency",                             "Position", [10 130 200 20], "Tag","help");
+                uilabel("Parent",hFig,"Text","g: grid",                                     "Position", [10 150 200 20], "Tag","help");
             else
                 delete(hHelp)
             end
