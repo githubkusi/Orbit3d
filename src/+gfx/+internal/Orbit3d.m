@@ -7,6 +7,7 @@ classdef Orbit3d < handle
     %     Double click:             Set rotation center
     %     Right click:              User defined callback
     %     Scroll wheel:             Zoom towards to/away from mouse pointer
+    %                               Use <shift> to change the zoom factor
     %     Key r:                    Reset view
     %     Key t:                    Toggle transparency of selected obj
     %     Key w:                    Toggle wireframe of selected patch
@@ -42,6 +43,7 @@ classdef Orbit3d < handle
         currentPoint % xy
         motionEventUid
         keyboardShortcuts
+        slowZoom = false
     end
 
     methods
@@ -63,6 +65,8 @@ classdef Orbit3d < handle
                 "WindowScrollWheel", @self.scrollWheelCallback, hAxes);
             gfx.FigureEventDispatcher.addAxesEvent(...
                 "KeyPress", @self.keyPressCallback, hAxes);
+            gfx.FigureEventDispatcher.addAxesEvent(...
+                "KeyRelease", @self.keyReleaseCallback, hAxes);
 
             hAxes.DataAspectRatio = [1 1 1];
             axis(hAxes, 'off');
@@ -155,7 +159,7 @@ classdef Orbit3d < handle
             gfx.FigureEventDispatcher.editEvent(hFig.CurrentAxes, self.motionEventUid, @(~,~)[]);
         end
 
-        function scrollWheelCallback(~, hFig, scrollWheelData)
+        function scrollWheelCallback(self, hFig, scrollWheelData)
             hAxes = hFig.CurrentAxes;
             if isempty(hAxes)
                 return
@@ -163,9 +167,15 @@ classdef Orbit3d < handle
 
             oldPoints = hAxes.CurrentPoint';
 
-            %ds =  3: scrollwheel up (away from user)
-            %ds = -3: scrollwheel down (towards user)
-            ds = scrollWheelData.VerticalScrollCount * scrollWheelData.VerticalScrollAmount;
+            % VerticalScrollCount
+            %   1: scrollwheel up (away from user)
+            %  -1: scrollwheel down (towards user)
+            if self.slowZoom
+                zoomFactor = 0.2;
+            else
+                zoomFactor = scrollWheelData.VerticalScrollAmount;
+            end
+            ds = scrollWheelData.VerticalScrollCount * zoomFactor;
 
             %setup
             %w: viewing angle
@@ -222,8 +232,17 @@ classdef Orbit3d < handle
                 case self.keyboardShortcuts.Color
                     self.toggleColor(hFig.CurrentObject)
 
+
                 case self.keyboardShortcuts.Help
                     self.toggleHelp(hFig)
+            end
+
+            self.slowZoom = keyData.Key == "shift";
+        end
+
+        function keyReleaseCallback(self, ~, keyData)
+            if keyData.Key == "shift"
+                self.slowZoom = false;
             end
         end
 
@@ -299,7 +318,7 @@ classdef Orbit3d < handle
             if isempty(hHelp)
                 uilabel("Parent",hFig,"Text","left click & move: rotate obj",               "Position", [10 10 200 20], "Tag","help");
                 uilabel("Parent",hFig,"Text","double click: set new rotation center",       "Position", [10 30 300 20], "Tag","help");
-                uilabel("Parent",hFig,"Text","scroll wheel: zoom",                          "Position", [10 50 300 20], "Tag","help");
+                uilabel("Parent",hFig,"Text","scroll wheel: zoom (slow zoom with <shift>)", "Position", [10 50 300 20], "Tag","help");
                 uilabel("Parent",hFig,"Text","r: reset view",                               "Position", [10 70 200 20], "Tag","help");
                 uilabel("Parent",hFig,"Text","w: wireframe",                                "Position", [10 90 200 20], "Tag","help");
                 uilabel("Parent",hFig,"Text","c: next color",                               "Position", [10 110 200 20], "Tag","help");

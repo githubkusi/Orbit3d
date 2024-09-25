@@ -7,6 +7,7 @@ function orbit3d(hAxes)
 %     Double click:             Set rotation center
 %     Right click:              User defined callback
 %     Scroll wheel:             Zoom towards to/away from mouse pointer
+%                               Use <shift> to change the zoom factor
 %     Key r:                    Reset view
 %     Key t:                    Toggle transparency of selected obj
 %     Key w:                    Toggle wireframe of selected patch
