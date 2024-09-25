@@ -16,6 +16,7 @@ classdef FigureEventDispatcher < handle
     %      WindowKeyPress
     %      WindowKeyRelease
     %      KeyPress
+    %      KeyRelease
     %      WindowScrollWheel
     %
     %   You may register a new event to an
@@ -54,6 +55,7 @@ classdef FigureEventDispatcher < handle
             hFigure.WindowKeyPressFcn = @gfx.FigureEventDispatcher.eventCallback;
             hFigure.WindowKeyReleaseFcn = @gfx.FigureEventDispatcher.eventCallback;
             hFigure.KeyPressFcn = @gfx.FigureEventDispatcher.eventCallback;
+            hFigure.KeyReleaseFcn = @gfx.FigureEventDispatcher.eventCallback;
 
             if ~isfield(hFigure.UserData, 'UiEventList')
                 hFigure.UserData.UiEventList = [];
@@ -62,7 +64,7 @@ classdef FigureEventDispatcher < handle
 
         function uid = addAxesEvent(eventName, fcn, hAxes, eventFilterFcn)
             arguments
-                eventName {mustBeMember(eventName, ["WindowMousePress" "WindowMouseMotion" "WindowMouseRelease" "WindowKeyPress" "WindowKeyRelease" "KeyPress" "WindowScrollWheel"])}
+                eventName {mustBeMember(eventName, ["WindowMousePress" "WindowMouseMotion" "WindowMouseRelease" "WindowKeyPress" "WindowKeyRelease" "KeyPress" "KeyRelease" "WindowScrollWheel"])}
                 fcn function_handle  % callback @(hFig, event), event is one of
                 %                      matlab.ui.eventdata.WindowMouseData
                 %                      matlab.ui.eventdata.ScrollWheelData
@@ -87,7 +89,7 @@ classdef FigureEventDispatcher < handle
 
         function uid = addFigureEvent(eventName, fcn, hFigure, eventFilterFcn)
             arguments
-                eventName {mustBeMember(eventName, ["WindowMousePress" "WindowMouseMotion" "WindowMouseRelease" "WindowKeyPress" "WindowKeyRelease" "KeyPress" "WindowScrollWheel"])}
+                eventName {mustBeMember(eventName, ["WindowMousePress" "WindowMouseMotion" "WindowMouseRelease" "WindowKeyPress" "WindowKeyRelease" "KeyPress" "KeyRelease" "WindowScrollWheel"])}
                 fcn function_handle  % callback @(hFig, event), event is one of
                 %                      matlab.ui.eventdata.WindowMouseData
                 %                      matlab.ui.eventdata.ScrollWheelData
