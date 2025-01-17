@@ -23,6 +23,11 @@ classdef FigureEventDispatcher < handle
     %   - axes object: event is only fired for current axes
     %   - figure object: event is always fired
     %
+    %   CONSTRAINTS
+    %       UserData of both axes an figure must be a struct. If you want
+    %       to add additional data, you need to add a field to the struct
+    %       UserData
+    %
     %   EXAMPLE
     %      Create figure with two axes. Clicking on axes1 prints "axes1
     %      clicked", clicking on axes2 prints "axes2 clicked". Pressing a
@@ -35,7 +40,7 @@ classdef FigureEventDispatcher < handle
     %      gfx.FigureEventDispatcher.addAxesEvent("WindowMousePress", @(hFig, event)disp("axes1 clicked"), hAxes1);
     %      gfx.FigureEventDispatcher.addAxesEvent("WindowMousePress", @(hFig, event)disp("axes2 clicked"), hAxes2);
     %      gfx.FigureEventDispatcher.addFigureEvent("KeyPress", @(hFig, event)disp("key pressed"), hGrid.Parent);
-    %    
+    %
     %   AUTHOR
     %     Copyright 2023, Markus Leuthold, markus.leuthold@sonova.com
     %
@@ -44,8 +49,26 @@ classdef FigureEventDispatcher < handle
 
     methods(Static)
         function setupFigureCallbacks(hFigure)
+            % The field UiEventList needs to be available for
+            % hFigure.UserData and hFigure.CurrentAxes.UserData
+            %
+            % addFigureEvent() is a custom function and not called within
+            % gfx.orbit3d(). Hence the field UiEventList needs to be added
+            % in setupFigureCallbacks().
+            %
+            % addAxesEvent() is called in orbit3d(), implicitly adding the
+            % field UiEventList.
             arguments
                 hFigure matlab.ui.Figure = gcf
+            end
+
+            assert(isempty(hFigure.UserData) || isstruct(hFigure.UserData), ...
+                'UserData must be a struct. If you need to add your own data, add it to a new field of the struct UserData');
+
+            % Currently, it is not foreseen to reset the field UiEventList
+            % in hFigure.UserData. Previously added figure events are preserved
+            if ~isfield(hFigure.UserData, 'UiEventList')
+                hFigure.UserData.UiEventList = [];
             end
 
             hFigure.WindowButtonDownFcn = @gfx.FigureEventDispatcher.eventCallback;
@@ -56,10 +79,6 @@ classdef FigureEventDispatcher < handle
             hFigure.WindowKeyReleaseFcn = @gfx.FigureEventDispatcher.eventCallback;
             hFigure.KeyPressFcn = @gfx.FigureEventDispatcher.eventCallback;
             hFigure.KeyReleaseFcn = @gfx.FigureEventDispatcher.eventCallback;
-
-            if ~isfield(hFigure.UserData, 'UiEventList')
-                hFigure.UserData.UiEventList = [];
-            end
         end
 
         function uid = addAxesEvent(eventName, fcn, hAxes, eventFilterFcn)
@@ -109,6 +128,7 @@ classdef FigureEventDispatcher < handle
             s.filterFcn = eventFilterFcn;
             s.uid = uid;
 
+            % Existence of UiEventList is guaranteed in setupFigureCallbacks
             hFigure.UserData.UiEventList = [hFigure.UserData.UiEventList s];
         end
 
@@ -131,6 +151,11 @@ classdef FigureEventDispatcher < handle
 
     methods(Static, Hidden)
         function eventCallback(hFig, event)
+            % performance-critical
+
+            % It is assumed there are axes events from orbit3d(). Without
+            % any axes events (=non existing UiEventList on the axes), this
+            % would fail.
             evList = [hFig.UserData.UiEventList hFig.CurrentAxes.UserData.UiEventList];
 
             tfEventName =  [evList.name] == event.EventName;
