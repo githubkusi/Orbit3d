@@ -33,6 +33,8 @@ function orbit3d(hAxes)
 %        gfx.FigureEventDispatcher.addFigureEvent(...
 %          "KeyPress", @(~,evnt)disp(evnt.Key), hFigure);
 %
+%     See man page of gfx.FigureEventDispatcher for further details
+%
 %
 %   NOTES
 %     Instance of gfx.internal.Orbit3d is kept in hFigure.UserData.orbit3d
