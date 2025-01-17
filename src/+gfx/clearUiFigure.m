@@ -1,6 +1,7 @@
 function hFig = clearUiFigure(hFig)
 arguments
-    hFig = gfx.currentUiFigure
+    hFig matlab.ui.Figure = gfx.currentUiFigure
 end
 clf(hFig);
 hFig.UserData = [];
+hFig.HandleVisibility = "on";
