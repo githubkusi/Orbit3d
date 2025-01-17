@@ -1,7 +1,6 @@
 function hFig = clearUiFigure3d(hFig)
 arguments
-    hFig = gfx.currentUiFigure
+    hFig matlab.ui.Figure = gfx.currentUiFigure
 end
-clf(hFig);
-hFig.UserData = [];
+gfx.clearUiFigure(hFig);
 gfx.clearUiAxes3d(hFig);
