@@ -45,7 +45,7 @@ classdef FigureEventDispatcher < handle
     methods(Static)
         function setupFigureCallbacks(hFigure)
             arguments
-                hFigure matlab.ui.Figure
+                hFigure matlab.ui.Figure = gcf
             end
 
             hFigure.WindowButtonDownFcn = @gfx.FigureEventDispatcher.eventCallback;
