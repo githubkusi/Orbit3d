@@ -1,8 +1,13 @@
-function hAxes = clearUiAxes3d(hParent)
+function hAxes = clearUiAxes3d(hParentOrAxes, pv)
 arguments
-    hParent = gfx.currentUiFigure % normally figure or axis
+    hParentOrAxes = gfx.currentUiFigure % figure, uigrid or axis
 end
-hAxes = gfx.currentUiAxes(hParent);
+
+if hParentOrAxes.Type == "axes"
+    hAxes = hParentOrAxes;
+else
+    hAxes = gfx.currentUiAxes(hParentOrAxes);
+end
 
 % Delete old callbacks, to avoid double callbacks. They are recreated with gfx.orbit3d
 if isfield(hAxes.UserData, 'UiEventList')
