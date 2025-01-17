@@ -1,6 +1,7 @@
 function hAxes = clearUiAxes3d(hParentOrAxes, pv)
 arguments
     hParentOrAxes = gfx.currentUiFigure % figure, uigrid or axis
+    pv.ResetView logical = true; % If false, camera target & position are not reset
 end
 
 if hParentOrAxes.Type == "axes"
@@ -17,4 +18,7 @@ end
 % cla kills the light, therefore the orbit is newly created
 cla(hAxes);
 gfx.orbit3d(hAxes);
-gfx.resetView(hAxes);
+
+if pv.ResetView
+    gfx.resetView(hAxes);
+end
