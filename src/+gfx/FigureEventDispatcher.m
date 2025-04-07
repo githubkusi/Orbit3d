@@ -71,6 +71,12 @@ classdef FigureEventDispatcher < handle
                 hFigure.UserData.UiEventList = [];
             end
 
+            % If datacursor mode is enabled, no callbacks can be set
+            dcm = datacursormode(hFigure);
+            if dcm.Enable
+                dcm.Enable = "off";
+            end
+
             hFigure.WindowButtonDownFcn = @gfx.FigureEventDispatcher.eventCallback;
             hFigure.WindowButtonMotionFcn = @gfx.FigureEventDispatcher.eventCallback;
             hFigure.WindowButtonUpFcn = @gfx.FigureEventDispatcher.eventCallback;
