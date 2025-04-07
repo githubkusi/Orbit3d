@@ -1,26 +1,40 @@
 classdef HgGroup < handle
     methods (Static)
-        function hButton = createGuiElement(hParent, hObj)
+        function hButton = createGuiElement(hParent, hGroup)
+            [col, txt] = gfx.internal.uibrowser.HgGroup.getColorAndType(hGroup);
             hButton = uibutton(hParent, 'state');
-            hButton.Value = hObj.Visible;
-            hButton.Text = hObj.DisplayName;
+            hButton.Value = hGroup.Visible;
+            hButton.Text = txt;
             hButton.ValueChangedFcn = @gfx.internal.uibrowser.HgGroup.visibleStateChanged;
-            hButton.UserData.hObj = hObj;
+            hButton.UserData.hObj = hGroup;
+            hButton.BackgroundColor = col;
+            hButton.FontColor = gfx.internal.uibrowser.fontColor(...
+                hButton.BackgroundColor,  hButton.FontColor);
+        end
 
-            % try different things
-            if isprop(hObj.Children(1), 'FaceColor')
-                % patch or surface
-                col = hObj.Children(1).FaceColor;
-            else
-                % default
-                col = 'w';
+        function [col, txt] = getColorAndType(hGroup)
+            arguments
+                hGroup matlab.graphics.primitive.Group
             end
 
-            hButton.BackgroundColor = col;
+            % First element in returned array is always used to set the
+            % color in the legend, no matter where in the scenegraph the
+            % object is located
+            h = findobj(hGroup, 'type', 'patch', '-or', 'type', 'line');
 
-            % make text readable
-            if vecnorm(hButton.BackgroundColor - hButton.FontColor) < 1.1
-                hButton.FontColor = 1 - hButton.BackgroundColor;
+            switch h(1).Type
+                case 'line'
+                    col = h.Color;
+                    txt = gfx.internal.uibrowser.line.text(h(1), hGroup.DisplayName);
+
+                case 'patch'
+                    col = gfx.internal.uibrowser.patch.color(h(1));
+                    txt = gfx.internal.uibrowser.patch.text(hGroup.DisplayName);
+
+                otherwise
+                    warning('color picking/text not yet implemented, use default');
+                    col = 'w';
+                    txt = h.Type;
             end
         end
 

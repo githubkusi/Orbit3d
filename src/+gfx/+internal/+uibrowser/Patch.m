@@ -1,23 +1,14 @@
 classdef Patch < handle
     methods (Static)
-        function createGuiElement(hParent, hObj)
+        function createGuiElement(hParent, hPatch)
             hButton = uibutton(hParent, 'state');
-            hButton.Value = hObj.Visible;
-            hButton.Text = hObj.DisplayName;
+            hButton.Value = hPatch.Visible;
+            hButton.Text = gfx.internal.uibrowser.patch.text(hPatch.DisplayName);
             hButton.ValueChangedFcn = @gfx.internal.uibrowser.Patch.visibleStateChanged;
-            hButton.UserData.hObj = hObj;
-
-            if ischar(hObj.FaceColor) && ismember(hObj.FaceColor, {'interp', 'flat'})
-                col = mean(hObj.FaceVertexCData, 1);
-            else
-                col = hObj.FaceColor;
-            end
-            hButton.BackgroundColor = col;
-
-            % make text readable
-            if vecnorm(hButton.BackgroundColor - hButton.FontColor) < 1.1
-                hButton.FontColor = 1 - hButton.BackgroundColor;
-            end
+            hButton.UserData.hObj = hPatch;
+            hButton.BackgroundColor = gfx.internal.uibrowser.patch.color(hPatch);
+            hButton.FontColor = gfx.internal.uibrowser.fontColor(...
+                hButton.BackgroundColor,  hButton.FontColor);
         end
 
         function visibleStateChanged(btn, evnt)

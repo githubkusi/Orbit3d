@@ -1,17 +1,14 @@
 classdef Line < handle
     methods (Static)
-        function hButton = createGuiElement(hParent, hObj)
+        function hButton = createGuiElement(hParent, hLine)
             hButton = uibutton(hParent, 'state');
-            hButton.Value = hObj.Visible;
-            hButton.Text = hObj.DisplayName;
+            hButton.Value = hLine.Visible;
+            hButton.Text = gfx.internal.uibrowser.line.text(hLine);
             hButton.ValueChangedFcn = @gfx.internal.uibrowser.Line.visibleStateChanged;
-            hButton.UserData.hObj = hObj;
-            hButton.BackgroundColor = hObj.Color;
-
-            % make text readable
-            if vecnorm(hButton.BackgroundColor - hButton.FontColor) < 1.1
-                hButton.FontColor = 1 - hButton.BackgroundColor;
-            end
+            hButton.UserData.hObj = hLine;
+            hButton.BackgroundColor = hLine.Color;
+            hButton.FontColor = gfx.internal.uibrowser.fontColor(...
+                hButton.BackgroundColor,  hButton.FontColor);
         end
 
         function visibleStateChanged(btn, evnt)

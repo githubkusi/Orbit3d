@@ -56,7 +56,19 @@ classdef UiBrowser < handle
                 Tooltip="Show object even if the property 'DisplayName' of the graphic handle is empty");
 
             for hAxes = findobj(self.hFigure, 'type', 'axes')'
-                h = findobj(hAxes, 'type', 'patch', '-or', 'type', 'line', '-or', 'type', 'hggroup');
+                hGroups = findobj(hAxes, 'type', 'hggroup');
+                hPatchOrLine = findobj(hAxes, 'type', 'patch', '-or', 'type', 'line');
+
+                % don't dive into groups
+                % ancestor returns cell if there are several hits but an
+                % empty double if there are no hits
+                hParentGroup = ancestor(hPatchOrLine, 'hggroup');
+                if isempty(hParentGroup)
+                    h = [hGroups; hPatchOrLine];
+                else
+                    isNotInGroup = cellfun(@isempty, hParentGroup);
+                    h = [hGroups; hPatchOrLine(isNotInGroup)];
+                end
 
                 if isempty(h)
                     % axes has no content (e.g gui elements)
