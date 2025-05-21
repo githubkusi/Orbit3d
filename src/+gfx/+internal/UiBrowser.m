@@ -56,7 +56,9 @@ classdef UiBrowser < handle
                 Tooltip="Show object even if the property 'DisplayName' of the graphic handle is empty");
 
             for hAxes = findobj(self.hFigure, 'type', 'axes')'
-                hGroups = findobj(hAxes, 'type', 'hggroup');
+                % display only top-level groups
+                hGroups = findobj(hAxes, 'type', 'hggroup', '-depth', 1);
+
                 hPatchOrLine = findobj(hAxes, 'type', 'patch', '-or', 'type', 'line');
 
                 % don't dive into groups

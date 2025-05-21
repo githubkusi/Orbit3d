@@ -22,9 +22,11 @@ classdef HgGroup < handle
             % object is located
             h = findobj(hGroup, 'type', 'patch', '-or', 'type', 'line');
 
+            % DisplayName is always taken from the hggroup. DisplayName of
+            % the childern is ignored
             switch h(1).Type
                 case 'line'
-                    col = h.Color;
+                    col = h(1).Color;
                     txt = gfx.internal.uibrowser.line.text(h(1), hGroup.DisplayName);
 
                 case 'patch'
