@@ -5,6 +5,7 @@ classdef UiBrowser < handle
     properties
         hBrowser
         hFigure
+        hSelectedObj
     end
 
     methods
@@ -34,16 +35,54 @@ classdef UiBrowser < handle
             % cleanup if there was a previous browser figure
             delete(self.hBrowser.Children)
 
+            % objects and tools
+            hGrid = uigridlayout(self.hBrowser, [2 1], RowHeight=["1x" "fit"]);
+
             % each axes has its own layout
             numAxes = numel(findobj(self.hFigure, 'type', 'axes'));
-            glParentAxes = uigridlayout(self.hBrowser, [1 numAxes]);
+            glParentAxes = uigridlayout(hGrid, [1 numAxes]);
 
             for hAxes = findobj(self.hFigure, 'type', 'axes')'
 
                 hTreeRoot = uitree(glParentAxes, "checkbox");
                 hTreeRoot.CheckedNodesChangedFcn = @self.checkedNodesChanged;
+                hTreeRoot.SelectionChangedFcn = @self.selectionChangedFcn;
 
                 self.buildTreeLevel(hTreeRoot, hAxes, isTopLevel=true)
+            end
+
+            % tools
+            hToolsGrid = uigridlayout(hGrid, [2 1], ...
+                RowHeight=["fit" "fit"], ...
+                Tag="ToolsGrid");
+            uibutton(hToolsGrid, ...
+                Text="Clear selected object", ...
+                ButtonPushedFcn=@self.clearSelectedObject, ...
+                Tag="ClearSelectedObject", ...
+                Enable="off");
+            uibutton(hToolsGrid, ...
+                Text="Property inspector", ...
+                ButtonPushedFcn=@self.openPropertyInspector, ...
+                Tag="PropertyInspector", ...
+                Enable="off");
+        end
+
+        function clearSelectedObject(self, ~, ~)
+            delete(self.hSelectedObj);
+            self.buildGui;
+        end
+
+        function openPropertyInspector(self, ~, ~)
+            inspect(self.hSelectedObj)
+        end
+
+        function selectionChangedFcn(self, ~, selectedNodesChangedData)
+            node = selectedNodesChangedData.SelectedNodes;
+            hToolsGrid = findobj(self.hBrowser, 'Tag', 'ToolsGrid');
+            [hToolsGrid.Children.Enable] = deal(~isempty(node));
+
+            if ~isempty(node)
+                self.hSelectedObj = selectedNodesChangedData.SelectedNodes.NodeData.hObj;
             end
 
 
