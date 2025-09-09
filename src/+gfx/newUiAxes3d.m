@@ -1,4 +1,14 @@
 function hAxes = newUiAxes3d(hParent)
+% NEWUIAXES3D Create new uiaxes with enabled 3d orbit
+%
+% EXAMPLE multiple axes
+%     hFig = gfx.clearUiFigure;
+%     hGrid = uigridlayout(hFig, [2 1]);
+%     ax1 = gfx.newUiAxes3d(hGrid);
+%     ax2 = gfx.newUiAxes3d(hGrid);
+%     obj1.plot('parent', ax1);
+%     obj2.plot('parent', ax1);
+
 arguments
     hParent = uifigure("HandleVisibility", "on");
 end
