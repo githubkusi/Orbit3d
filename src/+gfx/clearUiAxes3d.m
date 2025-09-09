@@ -6,6 +6,8 @@ end
 
 if hParentOrAxes.Type == "axes"
     hAxes = hParentOrAxes;
+elseif hParentOrAxes.Type == "uigridlayout"
+    error('Use gfx.newUiAxes3d in conjunction with uigridlayout')
 else
     hAxes = gfx.currentUiAxes(hParentOrAxes);
 end
