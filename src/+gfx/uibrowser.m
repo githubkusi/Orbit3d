@@ -24,8 +24,15 @@ function hBrowser = uibrowser(hFigure)
 %  LICENSE
 %    BSD-3-Clause (https://opensource.org/licenses/BSD-3-Clause)
 arguments
-    hFigure matlab.ui.Figure = gcf
+    hFigure = groot().CurrentFigure
 end
+
+if isempty(hFigure)
+    disp("No figure found")
+    return
+end
+
+assert(isgraphics(hFigure) && hFigure.Type == "figure", 'Input must be a figure object')
 
 if ~isfield(hFigure.UserData, 'uiBrowser') || ~hFigure.UserData.uiBrowser.hasValidBrowserWindow
     hBrowser = uifigure(Tag="browser", HandleVisibility="off");
