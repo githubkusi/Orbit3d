@@ -13,6 +13,7 @@ classdef Orbit3d < handle
     %     Key w:                    Toggle wireframe of selected patch
     %     Key c:                    Toggle color of selected obj
     %     Key g:                    Toggle grid
+    %     Key b:                    Show object browser
     %     Key h:                    Show help
     %
     %   USAGE
@@ -235,11 +236,13 @@ classdef Orbit3d < handle
                     self.toggleTransparency(hFig.CurrentObject)
 
                 case self.keyboardShortcuts.Color
-                    self.toggleColor(hFig.CurrentObject)
+                    self.toggleColor(hFig)
 
                 case self.keyboardShortcuts.Grid
                     self.toggleGrid(hFig.CurrentAxes)
 
+                case self.keyboardShortcuts.ObjectBrowser
+                    gfx.uibrowser(hFig);
 
                 case self.keyboardShortcuts.Help
                     self.toggleHelp(hFig)
@@ -302,10 +305,11 @@ classdef Orbit3d < handle
             end
         end
 
-        function toggleColor(~, hObj)
+        function toggleColor(self, hFig)
             [r, g, b] = meshgrid(0:1,0:1,0:1);
             rgb = [r(:) g(:) b(:)];
 
+            hObj = hFig.CurrentObject;
             switch class(hObj)
                 case 'matlab.graphics.primitive.Patch'
                     if ischar(hObj.FaceColor)
@@ -319,6 +323,8 @@ classdef Orbit3d < handle
                     [~, idx] = min(sum(abs(rgb - hObj.Color), 2));
                     hObj.Color = rgb(gfx.internal.math.mod1(idx + 1, 8), :);
             end
+
+            self.updateBrowser(hFig);
         end
 
         function toggleGrid(~, hAxes)
@@ -340,8 +346,15 @@ classdef Orbit3d < handle
                 uilabel("Parent",hFig,"Text","c: next color",                               "Position", [10 110 200 20], "Tag","help");
                 uilabel("Parent",hFig,"Text","t: transparency",                             "Position", [10 130 200 20], "Tag","help");
                 uilabel("Parent",hFig,"Text","g: grid",                                     "Position", [10 150 200 20], "Tag","help");
+                uilabel("Parent",hFig,"Text","b: object browser",                           "Position", [10 170 200 20], "Tag","help");
             else
                 delete(hHelp)
+            end
+        end
+
+        function updateBrowser(~, hFig)
+            if isfield(hFig.UserData, 'uiBrowser') && hFig.UserData.uiBrowser.hasValidBrowserWindow
+                hFig.UserData.uiBrowser.buildGui;
             end
         end
     end

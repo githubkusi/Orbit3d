@@ -5,6 +5,8 @@ Matlab lacks a powerful and user friendly interactive tool to handle 3d objects 
 
 This toolbox implements a quaternion based 3d orbit. Multiple axes are supported, thanks to a newly implemented per-axes (rather than Matlab's own per-figure) event handler. Both the old java based and the new web based figures/axes are supported.
 
+It provides an object browser which replaces the discontinued `plotbrowser`
+
 ## Features
 |Event|Action  |
 |--|--|
@@ -16,6 +18,7 @@ This toolbox implements a quaternion based 3d orbit. Multiple axes are supported
 |Key t |Toggle transparency of selected obj |
 |Key w |Toggle wireframe of selected patch |
 |Key c |Toggle color of selected obj |
+|Key b |Object browser |
 |Key h |Show help |
 
 ## Example code
@@ -32,12 +35,19 @@ This toolbox implements a quaternion based 3d orbit. Multiple axes are supported
         "Vertices", [mesh.x mesh.y mesh.z], ...
         "Faces", mesh.tri, ...
         "FaceColor", "y");
+		
+## Demo: rotating an object and using keyboard shortcuts
+![Interaction demo](media/orbit3d.gif)
 
+## Demo: object browser
+![Object browser demo](media/uibrowser.gif)
+ 		
 Please find more examples in the folder `examples` about the following topics
 * Simple 3d orbit
 * Multiple uiaxes
 * Per-figure and per-axes callbacks
 * gca/gcf/clf/cla replacements for uiaxes/uifigure containing a 3d orbit
+* Replacement for plotbrowser
 
 ## Installation
 
@@ -47,10 +57,10 @@ or, if you use [ToolboxToolbox](https://github.com/ToolboxHub/ToolboxToolbox)
     tbUse('Orbit3d')
 
 ## Keywords
-Matlab, interactive, orbit, orbit3d, 3d, quaternion, geometry, rotation, axes, uiaxes, figure, plot, visualization, patch, mesh, graphics
+Matlab, interactive, orbit, orbit3d, 3d, quaternion, geometry, rotation, axes, uiaxes, figure, plot, visualization, patch, mesh, graphics, plotbrowser, browser
 
 ## Author
-Copyright 2022-2023, Markus Leuthold, markus.leuthold@sonova.com
+Copyright 2022-2025, Markus Leuthold, markus.leuthold@sonova.com
 
 ## License
 BSD-3-Clause (https://opensource.org/licenses/BSD-3-Clause)
