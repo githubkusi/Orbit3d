@@ -77,7 +77,7 @@ classdef Orbit3d < handle
             axis(hAxes, 'off');
 
             hold(hAxes, 'on');
-            self.getOrNewLight(hAxes);
+            self.setLight(hAxes);
         end
 
         function tf = isAxesObject(~, h)
@@ -99,12 +99,12 @@ classdef Orbit3d < handle
             tf = ~startsWith(cls, "matlab.ui.control") || isa(h, 'matlab.graphics.axis.Axes');
         end
 
-        function hLight = getOrNewLight(~, hAxes)
+        function setLight(~, hAxes)
             hLight = findobj(hAxes, 'type', 'Light');
             if isempty(hLight)
                 hLight = light('parent', hAxes);
-                hLight.Position = hAxes.CameraPosition - hAxes.CameraTarget;
             end
+            hLight.Position = hAxes.CameraPosition - hAxes.CameraTarget;
         end
 
         function xf = getCameraTransform(~, hAxes)
@@ -141,7 +141,7 @@ classdef Orbit3d < handle
             switch hFig.SelectionType
                 case 'normal'
                     % left click
-                    self.getOrNewLight(hAxes);
+                    self.setLight(hAxes);
                     hFig = ancestor(hAxes, 'figure');
                     gfx.FigureEventDispatcher.editEvent(hAxes, self.motionEventUid, @self.buttonMotionCallback)
                     self.currentPoint = hFig.CurrentPoint;
@@ -277,8 +277,7 @@ classdef Orbit3d < handle
 
             self.setCameraTransform(hAxes, xfNewCam)
 
-            hLight = self.getOrNewLight(hAxes);
-            hLight.Position = hAxes.CameraPosition - hAxes.CameraTarget;
+            self.setLight(hAxes);
         end
 
         function resetView(~, hAxes)
