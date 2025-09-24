@@ -73,7 +73,12 @@ classdef UiBrowser < handle
         end
 
         function openPropertyInspector(self, ~, ~)
-            inspect(self.hSelectedObj)
+            if isdeployed
+                %#exclude inspect
+                disp("'inspect' is non-deployable")
+            else
+                inspect(self.hSelectedObj)
+            end
         end
 
         function selectionChangedFcn(self, ~, selectedNodesChangedData)
