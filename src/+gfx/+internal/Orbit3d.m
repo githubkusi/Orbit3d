@@ -36,7 +36,7 @@ classdef Orbit3d < handle
     %          "KeyPress", @(~,evnt)disp(evnt.Key), hFigure);
     %
     %   AUTHOR
-    %     Copyright 2022-2023, Markus Leuthold, markus.leuthold@sonova.com
+    %     Copyright 2022-2025, Markus Leuthold, markus.leuthold@sonova.com
     %
     %   LICENSE
     %     BSD-3-Clause (https://opensource.org/licenses/BSD-3-Clause)
@@ -157,9 +157,12 @@ classdef Orbit3d < handle
         end
 
         function buttonMotionCallback(self, hFig, ~)
-            cpDelta = hFig.CurrentPoint - self.currentPoint;
+            % Performance critical
+            % - Execution time of this function on WebApp server ~ 0.001s
+            % - Executed every 0.01 - 0.02s on WebApp server
+            currentPointDelta = hFig.CurrentPoint - self.currentPoint;
             self.currentPoint = hFig.CurrentPoint;
-            self.updateRotation(hFig.CurrentAxes, cpDelta)
+            self.updateRotation(hFig.CurrentAxes, currentPointDelta)
         end
 
         function buttonUpCallback(self, hFig, ~)
@@ -258,23 +261,23 @@ classdef Orbit3d < handle
             end
         end
 
-        function updateRotation(self, hAxes, cpDelta)
+        function updateRotation(self, hAxes, currentPointDelta)
             speed = 0.02;
-            w = cpDelta * speed;
+            deltaAngle = currentPointDelta * speed;
             xfCam = self.getCameraTransform(hAxes);
 
-            qx = gfx.internal.math.Quaternion.angleaxis(w(2), [0;1;0]);
-            qy = gfx.internal.math.Quaternion.angleaxis(-w(1), [1;0;0]);
+            qx = gfx.internal.math.Quaternion.angleaxis(deltaAngle(2), [0;1;0]);
+            qy = gfx.internal.math.Quaternion.angleaxis(-deltaAngle(1), [1;0;0]);
             q = qx*qy;
 
             xfQ = eye(4);
             xfQ(1:3, 1:3) = q.RotationMatrix;
 
             dstCam = norm(hAxes.CameraPosition - hAxes.CameraTarget);
-            v = eye(4);
-            v(1:3, 4) = [0;0;1]*dstCam;
+            xfView = eye(4);
+            xfView(1:3, 4) = [0;0;1]*dstCam;
 
-            xfNewCam = xfCam * v * xfQ * inv(v); %#ok<MINV>
+            xfNewCam = xfCam * xfView * xfQ * inv(xfView); %#ok<MINV>
 
             self.setCameraTransform(hAxes, xfNewCam)
 
