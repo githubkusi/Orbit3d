@@ -111,6 +111,7 @@ classdef Orbit3d < handle
             x = hAxes.CameraUpVector';
             z = hAxes.CameraTarget' -  hAxes.CameraPosition';
             y = cross(z, x);
+            x = cross(y, z);
             xf = eye(4);
             xf(1:3, 1:3) = [x y z]./vecnorm([x y z]);
             xf(1:3, 4) = hAxes.CameraPosition';
