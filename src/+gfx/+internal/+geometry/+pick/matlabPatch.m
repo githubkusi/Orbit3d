@@ -27,24 +27,15 @@ else
     rayV = cursorline.v.p;
 end
 
-try
-    % embree based
-    [isHit, pt, triangleId, t, u, v] = geometry.mexRayCast(hPatch.Vertices', hPatch.Faces, rayP0, rayV); %#ok<ASGLU>
+v1 = hPatch.Vertices(hPatch.Faces(:,1), :);
+v2 = hPatch.Vertices(hPatch.Faces(:,2), :);
+v3 = hPatch.Vertices(hPatch.Faces(:,3), :);
 
-catch err
-    assert(err.identifier == "MATLAB:undefinedVarOrClass")
-    % matlab based, 3rd party
-
-    v1 = hPatch.Vertices(hPatch.Faces(:,1), :);
-    v2 = hPatch.Vertices(hPatch.Faces(:,2), :);
-    v3 = hPatch.Vertices(hPatch.Faces(:,3), :);
-
-    [isHit, t, ~, ~, pts] = gfx.internal.geometry.TriangleRayIntersection(rayP0, rayV, v1, v2, v3);
-    if any(isHit)
-        idx = find(isHit);
-        [~, triangleId] = min(t(isHit));
-        pt = pts(idx(triangleId), :)';
-    else
-        pt = [];
-    end
+[isHit, t, ~, ~, pts] = gfx.internal.geometry.TriangleRayIntersection(rayP0, rayV, v1, v2, v3);
+if any(isHit)
+    idx = find(isHit);
+    [~, triangleId] = min(t(isHit));
+    pt = pts(idx(triangleId), :)';
+else
+    pt = [];
 end
