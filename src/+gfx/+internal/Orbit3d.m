@@ -299,34 +299,12 @@ classdef Orbit3d < handle
         end
 
         function toggleTransparency(~, hObj)
-            if isa(hObj, 'matlab.graphics.primitive.Patch')
-                if hObj.FaceAlpha == 1
-                    hObj.FaceAlpha = 0.3;
-                else
-                    hObj.FaceAlpha = 1;
-                end
-            end
+            gfx.internal.toggleTransparency(hObj);
         end
 
         function toggleColor(self, hFig)
-            [r, g, b] = meshgrid(0:1,0:1,0:1);
-            rgb = [r(:) g(:) b(:)];
-
             hObj = hFig.CurrentObject;
-            switch class(hObj)
-                case 'matlab.graphics.primitive.Patch'
-                    if ischar(hObj.FaceColor)
-                        idx = 1;
-                    else
-                        [~, idx] = min(sum(abs(rgb - hObj.FaceColor), 2));
-                    end
-                    hObj.FaceColor = rgb(gfx.internal.math.mod1(idx + 1, 8), :);
-
-                case 'matlab.graphics.chart.primitive.Line'
-                    [~, idx] = min(sum(abs(rgb - hObj.Color), 2));
-                    hObj.Color = rgb(gfx.internal.math.mod1(idx + 1, 8), :);
-            end
-
+            gfx.internal.toggleColor(hObj);
             self.updateBrowser(hFig);
         end
 
