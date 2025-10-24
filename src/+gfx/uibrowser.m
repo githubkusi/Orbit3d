@@ -10,6 +10,10 @@ function hBrowser = uibrowser(hFigure)
 %  USAGE
 %    Press "b" in a figure to launch uibrowser
 %
+%  KEYBOARD SHORTCUTS
+%    "c": toggle color of selected node
+%    "t": toggle transparency of selected node (for patch only)
+%
 %  FEATURES
 %  - One browser figure per object figure
 %  - Supports objects of type patch/line/hggroup/text

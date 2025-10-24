@@ -22,6 +22,12 @@ classdef UiBrowser < handle
 
                 case 'b'
                     self.buildGui;
+
+                case 't'
+                    self.toggleTransparency;
+
+                case 'c'
+                    self.toggleColor;
             end
         end
 
@@ -44,7 +50,7 @@ classdef UiBrowser < handle
 
             for hAxes = findobj(self.hFigure, 'type', 'axes')'
 
-                hTreeRoot = uitree(glParentAxes, "checkbox");
+                hTreeRoot = uitree(glParentAxes, "checkbox", Tag="ObjectTree");
                 hTreeRoot.CheckedNodesChangedFcn = @self.checkedNodesChanged;
                 hTreeRoot.SelectionChangedFcn = @self.selectionChangedFcn;
 
@@ -214,6 +220,26 @@ classdef UiBrowser < handle
                 txt = 'text';
             end
             color = [1 1 1];
+        end
+
+        function toggleTransparency(self)
+            hTree = findobj(self.hBrowser, Tag="ObjectTree");
+            assert(isscalar(hTree), "multiple axes not yet supported")
+            gfx.internal.toggleTransparency(hTree.SelectedNodes.NodeData.hObj)
+        end
+
+        function toggleColor(self)
+            hTree = findobj(self.hBrowser, Tag="ObjectTree");
+            assert(isscalar(hTree), "multiple axes not yet supported")
+            hSelectedNode = hTree.SelectedNodes;
+            color = gfx.internal.toggleColor(hSelectedNode.NodeData.hObj);
+
+            nodeStyle = uistyle(...
+                BackgroundColor=color, ...
+                FontColor=gfx.internal.uibrowser.fontColor(color, [0 0 0]));
+
+            hTree.removeStyle(find([hTree.StyleConfigurations.TargetIndex{:}] == hSelectedNode))
+            hTree.addStyle(nodeStyle, Node=hSelectedNode)
         end
     end
 end
