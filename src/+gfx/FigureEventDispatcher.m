@@ -41,8 +41,17 @@ classdef FigureEventDispatcher < handle
     %      gfx.FigureEventDispatcher.addAxesEvent("WindowMousePress", @(hFig, event)disp("axes2 clicked"), hAxes2);
     %      gfx.FigureEventDispatcher.addFigureEvent("KeyPress", @(hFig, event)disp("key pressed"), hGrid.Parent);
     %
+    %   EXAMPLE disable/enable events
+    %      Disable events
+    %         eventList = hAxes.UserData.UiEventList;
+    %         keypressUid = eventList([eventList.name] == "KeyPress").uid;
+    %         gfx.FigureEventDispatcher.disableEvent(hAxes, keypressUid)
+    %
+    %      Re-enable events
+    %         gfx.FigureEventDispatcher.enableEvent(hAxes, keypressUid)
+    %
     %   AUTHOR
-    %     Copyright 2023, Markus Leuthold, markus.leuthold@sonova.com
+    %     Copyright 2023-2025, Markus Leuthold, markus.leuthold@sonova.com
     %
     %   LICENSE
     %     BSD-3-Clause (https://opensource.org/licenses/BSD-3-Clause)
@@ -145,13 +154,43 @@ classdef FigureEventDispatcher < handle
                 fcn   function_handle
             end
             idx = [hObj.UserData.UiEventList.uid] == uid;
-            assert(nnz(idx)==1, nnz(idx) + " events found, one expected: ambiguous")
-            hObj.UserData.UiEventList(idx).fcn = fcn;
+            if ~any(idx)
+                assert(isfield(hObj.UserData, 'DisabledUiEventList'), 'Event does not exist')
+                idx = [hObj.UserData.DisabledUiEventList.uid] == uid;
+                assert(nnz(idx)==1, nnz(idx) + " disabled events found, one expected: ambiguous")
+                hObj.UserData.DisabledUiEventList(idx).fcn = fcn;
+            else
+                assert(nnz(idx)==1, nnz(idx) + " events found, one expected: ambiguous")
+                hObj.UserData.UiEventList(idx).fcn = fcn;
+            end
         end
 
         function deleteEvent(hObj, uids)
             idx = ismember([hObj.UserData.UiEventList.uid], uids);
             hObj.UserData.UiEventList(idx) = [];
+        end
+
+        function disableEvent(hObj, uids)
+            arguments
+                hObj {mustBeA(hObj, {'matlab.graphics.axis.Axes' 'matlab.ui.control.UIAxes' 'matlab.ui.Figure'})}
+                uids (1,:)
+            end
+
+            if isfield(hObj.UserData, 'DisabledUiEventList')
+                isDisabled = ismember(uids, [hObj.UserData.DisabledUiEventList.uid]);
+                uids = uids(~isDisabled);
+            else
+                hObj.UserData.DisabledUiEventList = [];
+            end
+
+            idx = ismember([hObj.UserData.UiEventList.uid], uids);
+            hObj.UserData.DisabledUiEventList = [hObj.UserData.DisabledUiEventList hObj.UserData.UiEventList(idx)];
+            hObj.UserData.UiEventList(idx) = [];
+        end
+
+        function enableEvent(hObj, uids)
+            idx = ismember([hObj.UserData.DisabledUiEventList.uid], uids);
+            hObj.UserData.UiEventList = [hObj.UserData.UiEventList hObj.UserData.DisabledUiEventList(idx)];
         end
     end
 
