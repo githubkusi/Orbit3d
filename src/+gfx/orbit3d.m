@@ -12,7 +12,9 @@ function orbit3d(hAxes)
 %     Key t:                    Toggle transparency of selected obj
 %     Key w:                    Toggle wireframe of selected patch
 %     Key c:                    Toggle color of selected obj
+%     Key v:                    Toggle visibility of selected obj
 %     Key g:                    Toggle grid
+%     Key b:                    Show object browser
 %     Key h:                    Show help
 %
 %   USER DEFINED KEYBOARD SHORTCUTS
@@ -43,7 +45,7 @@ function orbit3d(hAxes)
 %     uiaxes()
 %
 %   AUTHOR
-%     Copyright 2022-2023, Markus Leuthold, markus.leuthold@sonova.com
+%     Copyright 2022-2026, Markus Leuthold, markus.leuthold@sonova.com
 %
 %   LICENSE
 %     BSD-3-Clause (https://opensource.org/licenses/BSD-3-Clause)

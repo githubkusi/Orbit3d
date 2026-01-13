@@ -12,6 +12,7 @@ classdef Orbit3d < handle
     %     Key t:                    Toggle transparency of selected obj
     %     Key w:                    Toggle wireframe of selected patch
     %     Key c:                    Toggle color of selected obj
+    %     Key v:                    Toggle visibility of selected obj
     %     Key g:                    Toggle grid
     %     Key b:                    Show object browser
     %     Key h:                    Show help
@@ -36,7 +37,7 @@ classdef Orbit3d < handle
     %          "KeyPress", @(~,evnt)disp(evnt.Key), hFigure);
     %
     %   AUTHOR
-    %     Copyright 2022-2025, Markus Leuthold, markus.leuthold@sonova.com
+    %     Copyright 2022-2026, Markus Leuthold, markus.leuthold@sonova.com
     %
     %   LICENSE
     %     BSD-3-Clause (https://opensource.org/licenses/BSD-3-Clause)
@@ -54,6 +55,7 @@ classdef Orbit3d < handle
             self.keyboardShortcuts.Wireframe = 'w';
             self.keyboardShortcuts.Transparency = 't';
             self.keyboardShortcuts.Color = 'c';
+            self.keyboardShortcuts.Visibility = 'v';
             self.keyboardShortcuts.Grid = 'g';
             self.keyboardShortcuts.Help = 'h';
             self.keyboardShortcuts.ObjectBrowser = 'b';
@@ -242,6 +244,9 @@ classdef Orbit3d < handle
                 case self.keyboardShortcuts.Color
                     self.toggleColor(hFig)
 
+                case self.keyboardShortcuts.Visibility
+                    self.toggleVisibility(hFig.CurrentObject)
+
                 case self.keyboardShortcuts.Grid
                     self.toggleGrid(hFig.CurrentAxes)
 
@@ -308,6 +313,23 @@ classdef Orbit3d < handle
             self.updateBrowser(hFig);
         end
 
+        function toggleVisibility(~, hObj)
+            if ismember(hObj.Type, ["figure" "uigridlayout"])
+                % This would close the window or remove GUI elements,
+                % which is unwanted
+                return
+            end
+
+            % If there's a scenegraph built with hggroup, identify the
+            % top-level hggroup to toggle the visibility of the entire tree
+            hgTopLevel = ancestor(hObj, "hggroup", "toplevel");
+            if ~isempty(hgTopLevel)
+                hObj = hgTopLevel;
+            end
+
+            hObj.Visible = ~hObj.Visible;
+        end
+
         function toggleGrid(~, hAxes)
             hAxes.Visible = ~hAxes.Visible;
             grid(hAxes, "on");
@@ -326,8 +348,9 @@ classdef Orbit3d < handle
                 uilabel("Parent",hFig,"Text","w: wireframe",                                "Position", [10 90 200 20], "Tag","help");
                 uilabel("Parent",hFig,"Text","c: next color",                               "Position", [10 110 200 20], "Tag","help");
                 uilabel("Parent",hFig,"Text","t: transparency",                             "Position", [10 130 200 20], "Tag","help");
-                uilabel("Parent",hFig,"Text","g: grid",                                     "Position", [10 150 200 20], "Tag","help");
-                uilabel("Parent",hFig,"Text","b: object browser",                           "Position", [10 170 200 20], "Tag","help");
+                uilabel("Parent",hFig,"Text","v: visibility",                               "Position", [10 150 200 20], "Tag","help");
+                uilabel("Parent",hFig,"Text","g: grid",                                     "Position", [10 170 200 20], "Tag","help");
+                uilabel("Parent",hFig,"Text","b: object browser",                           "Position", [10 190 200 20], "Tag","help");
             else
                 delete(hHelp)
             end
