@@ -245,7 +245,7 @@ classdef Orbit3d < handle
                     self.toggleColor(hFig)
 
                 case self.keyboardShortcuts.Visibility
-                    self.toggleVisibility(hFig.CurrentObject)
+                    self.toggleVisibility(hFig)
 
                 case self.keyboardShortcuts.Grid
                     self.toggleGrid(hFig.CurrentAxes)
@@ -313,7 +313,8 @@ classdef Orbit3d < handle
             self.updateBrowser(hFig);
         end
 
-        function toggleVisibility(~, hObj)
+        function toggleVisibility(self, hFig)
+            hObj = hFig.CurrentObject;
             if ismember(hObj.Type, ["figure" "uigridlayout"])
                 % This would close the window or remove GUI elements,
                 % which is unwanted
@@ -328,6 +329,7 @@ classdef Orbit3d < handle
             end
 
             hObj.Visible = ~hObj.Visible;
+            self.updateBrowser(hFig);
         end
 
         function toggleGrid(~, hAxes)
